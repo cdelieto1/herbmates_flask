@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Herbmates</title>
+
+    <h2>Create an Herb Account</h2>
+  <form action="/users" method="POST">
+    <p>
+      Email <input type="text" name="email">
+    </p>
+
+    <p>
+      Password <input type="password" name="password">
+    </p>
+
+    <p>
+      Confirm Password <input type="password" name="confirm_password">
+    </p>
+    <p>
+
+    <div>
+      Choose an Apartment Complex:  
+
+    <select name="complex">
+      {% for complex in complexes %}
+        <option value="{{ complex.complex_id }}">{{ complex.complex_name|title }}</option>
+      {% endfor %}
+    </select>
+    </div>
+    
+      <input type="submit">
+    </p>
+
+
+  </form>
+
+
+  </body>
+</html>
+
+
