@@ -32,7 +32,7 @@ def homepage():
         return redirect('/login')
 
     user = crud.get_user_by_id(session['user_id'])
-    inventory = Inventory.query.filter_by(status=1, complex_id=user.complex_id)
+    inventory = crud.get_herbs_in_inventory(user.complex_id)
 
     return render_template('homepage.html', user=user, inventory=inventory)
 
@@ -44,10 +44,15 @@ def register_user():
     # TODO: get all ACTIVE complexes and POPULATE LIST and sort ALPHABETICALLY in DROPDOWN
 
     if request.method == 'POST':
-        email = request.form.get('email').lower()
+        fname = request.form.get('fname')
+        lname = request.form.get('lname')
+        email = request.form.get('email')
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
-        complex_id = request.form.get('complex_id')
+
+        complex_id = request.form.get('complex')
+        #print('>>>>>>>>>>>>>>>>>>>>>>>')
+        #print(complex_id)
 
         if password != confirm_password:
             flash('Passwords do not match. Try again')
@@ -57,10 +62,11 @@ def register_user():
         if user:
             flash('Cannot create an account')
         else:
-            crud.create_user(email, password)
+            user = crud.create_user(email, password, fname, lname, complex_id)
+            session['is_authenticated'] = True
+            session['user_id'] = user.user_id
             flash('Account created!')
-
-        return redirect('/')
+            return redirect('/')
 
     complexes = Complex.query.all()
 
@@ -88,23 +94,17 @@ def login():
     return render_template('login.html')
 
 
-@app.route('/herb_add/<herb_id>')
-def add_herbs(herb_id):
+@app.route('/list')
+def add_herbs():
     """Add an herb"""
 
-    herbs = crud.get_herbs_in_inventory()
+    if not check_auth():
+        return redirect('/login')
 
-    return redirect('/', herbs=herbs)
+    user = crud.get_user_by_id(session['user_id'])
+    herbs = Description.query.all()
 
-
-@app.route('/herb_requested/<herb_id>')
-def delete_herbs(herb_id):
-    """Delete an herb"""
-
-    herbs = crud.msg_herb_owner_id(movie_id)
-
-    return redirect('/', movie=movie)
-
+    return render_template('list_herb.html', user=user, herbs=herbs)
 
 
 @app.route('/logout/')

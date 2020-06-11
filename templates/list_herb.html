@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}HerbMates{% endblock %}
+
+{% block body %}
+
+<h1> To add an herb: </h1>
+
+Select an herb you'd like to donate from the dropdown menu:
+
+    <select name="herb">
+      {% for herb in herbs %}
+        <option value="{{ herb.herb_id }}">{{ herb.herb_name|title }}</option>
+      {% endfor %}
+    </select>
+
+
+  <div>
+      <p>Entire a description about your herb here:</p>
+      <textarea name="description"></textarea>
+  </div>
+
+    <p>Your herb will expire 5 days from when you enter it into the system </p>
+
+  <p>    
+      <input type="submit">
+  </p>
+  
+{% endblock %}

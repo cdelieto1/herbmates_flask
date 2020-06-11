@@ -3,10 +3,14 @@
 from model import db, User, Complex, Description, Inventory, Messaging
 
 
-def create_user(email, password):
+def create_user(email, password, fname, lname, complex_id):
     """Create and return a new user."""
 
-    user = User(email=email, password=password)
+    user = User(email=email, 
+                password=password, 
+                fname=fname, 
+                lname=lname,
+                complex_id=complex_id)
 
     db.session.add(user)
     db.session.commit()
@@ -45,10 +49,10 @@ def create_user(email, password):
 # #     return rating
 
 
-def get_herbs_in_inventory():
+def get_herbs_in_inventory(complex_id):
     """Return all active herbs for a given complex"""
 
-    return Inventory.query.filter(status=1, complex_id=user.complex_id)
+    return Inventory.query.filter_by(status=1, complex_id=complex_id)
 
 
 def get_user_by_email(email):

@@ -1,21 +1,33 @@
 {% extends 'base.html' %}
-{% block title %}Movie Ratings Home{% endblock %}
+{% block title %}HerbMates{% endblock %}
 
 {% block body %}
-  <p style="width: 100%; text-align: right; font-size: 10pt;"><a style="color: red;" href="/logout/">LOGOUT</a></p>
-  <h1>Welcome back, {{ user.fname|title }}! Need an Herb? Donating an herb?</h1>
 
-  <ul>
+  <h1>Welcome back, {{ user.fname|title }}!</h1>
+
+    <h3>Need an Herb? <a href="/list">Donating</a> an herb?</h3>
+
+    <p>
+    Here is what we currently have available in the <b>"{{ user.complexes.complex_name|title }}"</b> building only: </p>
+
+    <div id="herb-list" class="row">
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 melon-summary">
+
+    <div class="well">
+      
     {% for listing in inventory %}
-      <li>
         <a href="/herbs/{{ listing.inventory_id }}">
           {{ listing.herb.herb_name }}
         <img src="{{ listing.user_img_url }}">
         </a>
         <p>{{ listing.pickup_instructions }}</p>
-      </li>
-    {% endfor %}
-  </ul>
 
+      <a href="/request" class="btn btn-md btn-primary">Request this herb</a>
+
+      </div>
+
+    </div>
+    {% endfor %}
+</div>
   
 {% endblock %}
