@@ -2,44 +2,35 @@
 
 import os, json, crud, model, server
 from datetime import datetime
+from model import *
 
 
-os.system('dropdb ratings')
-os.system('createdb ratings')
+os.system('dropdb herbmates')
+os.system('createdb herbmates')
 
 model.connect_to_db(server.app)
 model.db.create_all()
 
-# with open('data/movies.json') as f:
-#     movie_data = json.loads(f.read())
+# create complexes
+complex1 = Complex(complex_name='Montague', complex_address='1234 Mission st')
+complex2 = Complex(complex_name='l 7', complex_address='1222 Harrison st')
+db.session.add(complex1)
+db.session.add(complex2)
+db.session.commit()
 
-# Create movies, store them in list so we can use them
-# to create fake ratings
-movies_in_db = []
-for movie in movie_data:
-    title, overview, poster_path = (movie['title'],
-                                    movie['overview'],
-                                    movie['poster_path'])
-    release_date = datetime.strptime(movie['release_date'], '%Y-%m-%d')
 
-    db_movie = crud.create_movie(title,
-                                 overview,
-                                 release_date,
-                                 poster_path)
-    movies_in_db.append(db_movie)
-
-# Create 4 users; each user will have 1 apt complex. We need 2 users per complex.
-# 1 for pickup, one for delivery. 
-for n in range(4):
-    email = f'user{n}@test.com'  # Voila! A unique email!
-    password = 'test'
-    complex_id = 1
-
-    user = crud.create_user(email, password, complex_id)
-
-    for _ in range(4):
-        random_herb = choice(movies_in_db)
-        score = randint(1, 5)
-
-        crud.create_rating(user, random_movie, score)
+# create descriptions
+descript1 = Description(herb_name='Oregano', descript='Organic Oregano', img_url='/oregano.jpg')
+descript2 = Description(herb_name='Parsley', descript='Organic', img_url='/parsley.jpg')
+descript3 = Description(herb_name='Thyme', descript='Organic', img_url='/thyme.jpg')
+descript4 = Description(herb_name='Basil', descript='Organic', img_url='/basil.jpg')
+descript5 = Description(herb_name='Rosemary', descript='not-Organic', img_url='/rosemary.jpg')
+descript6 = Description(herb_name='Cilantro', descript='non-Oregano', img_url='/cilantro.jpg')
+db.session.add(descript1)
+db.session.add(descript2)
+db.session.add(descript3)
+db.session.add(descript4)
+db.session.add(descript5)
+db.session.add(descript6)
+db.session.commit()
     

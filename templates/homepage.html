@@ -3,7 +3,7 @@
 
 {% block body %}
 
-  <h1>Welcome back, {{ user.fname|title }}!</h1>
+    <h1>Welcome back, {{ user.fname|title }}!</h1>
 
     <h3>Need an Herb? <a href="/list">Donating</a> an herb?</h3>
 
@@ -11,23 +11,26 @@
     Here is what we currently have available in the <b>"{{ user.complexes.complex_name|title }}"</b> building only: </p>
 
     <div id="herb-list" class="row">
-    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 melon-summary">
-
-    <div class="well">
+        {% for listing in inventory %}
+        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 herb-summary">
       
-    {% for listing in inventory %}
-        <a href="/herbs/{{ listing.inventory_id }}">
-          {{ listing.herb.herb_name }}
-        <img src="{{ listing.user_img_url }}">
-        </a>
-        <p>{{ listing.pickup_instructions }}</p>
+            
+            <div class="well">
+                Herb:
+                <a href="/herbs/{{ listing.inventory_id }}">
+                  {{ listing.herb.herb_name }} </a>
+                <p>This herb is currently owned by: <b>{{ listing.user.fname|title }}</b> </p>
+                <img src="/static/img{{ listing.herb.img_url }}">
+                </a>
+                <p>Pickup instructions for this bundle: {{ listing.pickup_instructions }}</p>
+                <p>This herb will expire on: {{ listing.exp_date }}</p>
+              <a href="/request" class="btn btn-md btn-primary">Request this herb</a>
 
-      <a href="/request" class="btn btn-md btn-primary">Request this herb</a>
+            </div>
+            
 
-      </div>
-
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-</div>
   
 {% endblock %}

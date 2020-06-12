@@ -2,6 +2,7 @@
 
 from flask import (Flask, render_template, request, flash, session,
                    redirect)
+from datetime import datetime
 from model import *
 import crud
 
@@ -33,6 +34,9 @@ def homepage():
 
     user = crud.get_user_by_id(session['user_id'])
     inventory = crud.get_herbs_in_inventory(user.complex_id)
+
+    # if len(inventory) == 0:
+    #     flash("The inventory is currently empty")
 
     return render_template('homepage.html', user=user, inventory=inventory)
 
@@ -105,6 +109,43 @@ def add_herbs():
     herbs = Description.query.all()
 
     return render_template('list_herb.html', user=user, herbs=herbs)
+
+@app.route('/list', methods=['POST'])
+def add_to_list():
+    """Add an herb"""
+
+    if not check_auth():
+        return redirect('/login')
+
+    user = crud.get_user_by_id(session['user_id'])
+    print('>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+    print(user.user_id)
+    print(user.complex_id)
+
+    herb_id = request.form.get('herb')
+    print('>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+    print(herb_id)
+
+    listing_date=datetime.now()
+    print('>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+    print(listing_date)
+
+    herb_qty = request.form.get('herb_qty')
+    herb_qty = 1
+
+    pickup_instructions = request.form.get('description')
+
+    listing = crud.add_herbs_to_inventory(herb_id, 
+                                         user.user_id,
+                                         listing_date,
+                                         user.complex_id,
+                                         pickup_instructions,
+                                         herb_qty)
+
+    if not listing:
+        flash('Problem listing herb. Please try again!')
+
+    return redirect('/')
 
 
 @app.route('/logout/')

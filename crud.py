@@ -1,5 +1,6 @@
 # """CRUD operations."""
 
+from datetime import datetime, timedelta
 from model import db, User, Complex, Description, Inventory, Messaging
 
 
@@ -18,35 +19,22 @@ def create_user(email, password, fname, lname, complex_id):
     return user
 
 
-# # def add_herb_qty(title, overview, release_date, poster_path):
-# #     """Return an addition to the herb qty"""
+def add_herbs_to_inventory(herb_id, user_id, listing_date, complex_id, pickup_instructions, herb_qty=1):
+    """Add an herbs for a given complex"""
 
-# #     herb = Inventory(title=title,
-# #                   overview=overview,
-# #                   release_date=release_date,
-# #                   poster_path=poster_path)
+    listing = Inventory(herb_id=herb_id,
+                     user_id=user_id,
+                     listing_date=listing_date,
+                     complex_id=complex_id,
+                     herb_qty=herb_qty,
+                     exp_date=listing_date + timedelta(days=5),
+                     pickup_instructions=pickup_instructions,
+                     status=1,
+                     )   
+    db.session.add(listing)
+    db.session.commit()
 
-# #     db.session.add(movie)
-# #     db.session.commit()
-
-# #     return movie
-
-
-# # def get_movies():
-# #     """Return all movies."""
-
-# #     return Inventory.query.all()
-
-
-# # def create_rating(user, movie, score):
-# #     """Create and return a new rating."""
-
-# #     rating = Rating(user=user, movie=movie, score=score)
-
-# #     db.session.add(rating)
-# #     db.session.commit()
-
-# #     return rating
+    return listing
 
 
 def get_herbs_in_inventory(complex_id):

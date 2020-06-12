@@ -31,7 +31,7 @@ class User(db.Model):
                         autoincrement=True,
                         primary_key=True,
                         nullable=False)
-    email = db.Column(db.String(25), unique=True, nullable=False)
+    email = db.Column(db.String(45), unique=True, nullable=False)
     password = db.Column(db.String(10), nullable=False)
     fname = db.Column(db.String(20), nullable=False)
     lname = db.Column(db.String(20), nullable=False)
@@ -68,7 +68,7 @@ class Inventory(db.Model):
     __tablename__ = 'inventories'
 
     inventory_id = db.Column(db.Integer, autoincrement=True, primary_key=True, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), unique=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     pickup_user_id = db.Column(db.Integer, unique=True, nullable=True)
     listing_date = db.Column(db.DateTime, nullable=False)
     # Status: 0=incative/delisted, 1=active/listed, 2=pending pickup, 3=completed/ picked up
@@ -83,6 +83,7 @@ class Inventory(db.Model):
  
     #the inventory backref is to the description. 
     herb = db.relationship('Description')
+    user = db.relationship('User')
 
     def __repr__(self):
         return f'<Herb Inventory inventory_id={self.inventory_id} herb_id={self.herb_id}>'        

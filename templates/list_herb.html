@@ -7,6 +7,8 @@
 
 Select an herb you'd like to donate from the dropdown menu:
 
+  <form action="/list" method="POST">
+
     <select name="herb">
       {% for herb in herbs %}
         <option value="{{ herb.herb_id }}">{{ herb.herb_name|title }}</option>
@@ -24,5 +26,6 @@ Select an herb you'd like to donate from the dropdown menu:
   <p>    
       <input type="submit">
   </p>
-  
+
+  </form>
 {% endblock %}
