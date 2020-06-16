@@ -1,6 +1,6 @@
 /* Style the HerbMates site */
 
-.row {
+div.row {
     margin: 5px !important;
 }
 
@@ -13,4 +13,18 @@ div.navbar-header img {
 
 div.well img {
     width: 90px;
+}
+
+div.pending {
+    border: solid 3px #de1f01 !important;
+}
+
+p.action-btn {
+    text-align: right;
+    padding-top: 10px;
+}
+
+p.notification {
+    text-align: center;
+    padding-top: 10px;
 }

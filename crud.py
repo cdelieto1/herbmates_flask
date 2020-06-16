@@ -37,10 +37,16 @@ def add_herbs_to_inventory(herb_id, user_id, listing_date, complex_id, pickup_in
     return listing
 
 
-def get_herbs_in_inventory(complex_id):
+def get_herbs_in_inventory(complex_id, user_id):
     """Return all active herbs for a given complex"""
 
-    return Inventory.query.filter_by(status=1, complex_id=complex_id)
+    return Inventory.query.filter((Inventory.status==1) | (Inventory.status==2) | (Inventory.status==3))\
+    .filter(Inventory.complex_id==complex_id)\
+    .filter((Inventory.user_id==user_id) | (Inventory.pickup_user_id==user_id) | (Inventory.pickup_user_id==None))\
+    .filter(Inventory.exp_date >= datetime.now())\
+    .order_by(Inventory.status.desc())
+
+    #multiple users works?
 
 
 def get_user_by_email(email):
@@ -49,6 +55,10 @@ def get_user_by_email(email):
 
 def get_user_by_id(user_id):
     return User.query.filter(User.user_id == user_id).first()
+
+def get_herb_by_inventory_id(inventory_id):
+    """ Get singular inventory """
+    return Inventory.query.filter_by(inventory_id=inventory_id).one()
 
 if __name__ == '__main__':
     from server import app

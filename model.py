@@ -69,10 +69,11 @@ class Inventory(db.Model):
 
     inventory_id = db.Column(db.Integer, autoincrement=True, primary_key=True, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
-    pickup_user_id = db.Column(db.Integer, unique=True, nullable=True)
+    pickup_user_id = db.Column(db.Integer, nullable=True)
     listing_date = db.Column(db.DateTime, nullable=False)
-    # Status: 0=incative/delisted, 1=active/listed, 2=pending pickup, 3=completed/ picked up
+    # Status: 0=incative/delisted, 1=active/listed, 2=pending, 3=pickup read, 4=completed
     status = db.Column(db.Integer, nullable=False)
+    #user_herb_descript = db.Column(db.String(200), nullable=True)
     pickup_instructions = db.Column(db.String(200), nullable=True)
     last_update = db.Column(db.DateTime, nullable=True)
     herb_id = db.Column(db.Integer, db.ForeignKey('descriptions.herb_id'), nullable=False)

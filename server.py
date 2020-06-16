@@ -33,19 +33,23 @@ def homepage():
         return redirect('/login')
 
     user = crud.get_user_by_id(session['user_id'])
-    inventory = crud.get_herbs_in_inventory(user.complex_id)
+    if not user:
+        return redirect('/logout')
 
-    # if len(inventory) == 0:
-    #     flash("The inventory is currently empty")
+    inventory = crud.get_herbs_in_inventory(user.complex_id, user.user_id)
+    print('Print inventory below')
+    print(inventory)
+    print('>>>>>>>>>>>>>>>')
 
-    return render_template('homepage.html', user=user, inventory=inventory)
+    inventory_count = inventory.count()
+
+    return render_template('homepage.html', user=user, inventory_count=inventory_count, inventory=inventory)
 
 
 @app.route('/signup', methods=['GET', 'POST'])
 def register_user():
     """Create a new user."""
 
-    # TODO: get all ACTIVE complexes and POPULATE LIST and sort ALPHABETICALLY in DROPDOWN
 
     if request.method == 'POST':
         fname = request.form.get('fname')
@@ -118,18 +122,19 @@ def add_to_list():
         return redirect('/login')
 
     user = crud.get_user_by_id(session['user_id'])
-    print('>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-    print(user.user_id)
-    print(user.complex_id)
+    #print('>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+    #print(user.user_id)
+    #print(user.complex_id)
 
     herb_id = request.form.get('herb')
-    print('>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-    print(herb_id)
+    #print('>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+    #print(herb_id)
 
     listing_date=datetime.now()
-    print('>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-    print(listing_date)
+    #print('>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+    #print(listing_date)
 
+    #TODO: add a qty field into form. For now, we set it to 1 as a forced value.
     herb_qty = request.form.get('herb_qty')
     herb_qty = 1
 
@@ -146,6 +151,75 @@ def add_to_list():
         flash('Problem listing herb. Please try again!')
 
     return redirect('/')
+
+@app.route('/update_inventory_status', methods=['GET', 'POST'])
+def update_inventory_status():
+
+    if not check_auth():
+        return 'user not authenticated', 403 # forbidden
+
+    user_id = session['user_id'] 
+    
+    print(request)
+
+    #replace task and inventory_id w/ ajax data on base.js
+    task = request.form.get('task') # pickup, ready, complete, delete
+    print(task)
+    inventory_id = request.form.get('inventory_id')
+    print(inventory_id)
+
+
+
+    #write crud function to lookup singular inventory
+    inventory = crud.get_herb_by_inventory_id(inventory_id)
+
+    if inventory:
+
+        if task == 'pickup' and inventory.status == 1 and inventory.user_id != user_id: # can't book my own herb
+            inventory.pickup_user_id = user_id
+            inventory.status = 2
+            inventory.last_update = datetime.now()
+            inventory.update_id = user_id
+            
+            # TODO last feature: notify inventory.user_id with email/txt pickup request 
+
+
+        elif task == 'ready' and inventory.status == 2 and inventory.user_id == user_id: # only person who posted it can update pickup instructions and make it available
+
+            pickup_instructions = request.form.get('pickup_instructions')
+
+            inventory.status = 3
+            inventory.pickup_instructions = pickup_instructions # from FE
+            inventory.last_update = datetime.now()
+            inventory.update_id = user_id
+
+            # TODO: notify inventory.pickup_user_id with email/txt incl. pickup instructions
+
+        elif task == 'complete' and inventory.status == 3 and inventory.pickup_user_id == user_id: # only person that requested it can complete pckup
+
+            inventory.status = 4
+            inventory.last_update = datetime.now()
+            inventory.update_id = user_id
+
+            # TODO: notify inventory.user_id with email/txt completed msg
+
+
+        elif task == 'delete' and inventory.status == 1 and inventory.user_id == user_id: # only currently active item (non requtested) and person that posted it can delete a listing
+
+            inventory.status = 0
+            inventory.last_update = datetime.now()
+            inventory.update_id = user_id
+
+        else:
+            # non-valid task was passed
+            return 'bad request!', 404
+
+        db.session.commit()
+        return 'success', 200
+
+    else:
+        # inventory was not found
+        return 'inventory not found!', 404
 
 
 @app.route('/logout/')

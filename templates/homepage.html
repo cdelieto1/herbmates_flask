@@ -3,34 +3,68 @@
 
 {% block body %}
 
-    <h1>Welcome back, {{ user.fname|title }}!</h1>
+    <h1>Welcome to Herbmates, {{ user.fname|title }}!</h1>
 
     <h3>Need an Herb? <a href="/list">Donating</a> an herb?</h3>
 
-    <p>
-    Here is what we currently have available in the <b>"{{ user.complexes.complex_name|title }}"</b> building only: </p>
+    {% if not inventory_count > 0  %}
 
-    <div id="herb-list" class="row">
-        {% for listing in inventory %}
-        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 herb-summary">
-      
-            
-            <div class="well">
-                Herb:
-                <a href="/herbs/{{ listing.inventory_id }}">
-                  {{ listing.herb.herb_name }} </a>
-                <p>This herb is currently owned by: <b>{{ listing.user.fname|title }}</b> </p>
-                <img src="/static/img{{ listing.herb.img_url }}">
-                </a>
-                <p>Pickup instructions for this bundle: {{ listing.pickup_instructions }}</p>
-                <p>This herb will expire on: {{ listing.exp_date }}</p>
-              <a href="/request" class="btn btn-md btn-primary">Request this herb</a>
+        <p>There are currently no herbs listed at the {{ user.complexes.complex_name|title }}. Why don't you DONATE one?</p>
+
+    {% else %}
+
+        <p>Welcome, currently there are <b>{{ inventory_count }}</b> herb(s) available in the <b>"{{ user.complexes.complex_name|title }}"</b> building: </p>
+
+        <div id="herb-list" class="row">
+            {% for listing in inventory %}
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 herb-summary">
+          
+                
+                <div class="well {% if listing.status in [2,3] %}pending{% endif %}">
+                    Herb:
+                      <b>{{ listing.herb.herb_name }}</b>
+                    <p>This herb is currently owned by: <b>{{ listing.user.fname|title }}</b> </p>
+                    <img src="/static/img{{ listing.herb.img_url }}">
+                    </a>
+                    <p>Additional info for this bundle: {{ listing.pickup_instructions }}</p>
+                    <p>This herb will expire on: {{ listing.exp_date }}</p>
+
+                    <!-- BUTTON LOGIC -->
+                    {% if listing.status == 1 and listing.user_id != user.user_id %}
+                        <p class="action-btn">
+                        <a href="#" onclick="updateStatus('pickup', '{{ listing.inventory_id }}', ''); return false;" class="btn btn-md btn-primary">Request this herb</a>
+                        </p>
+
+                    {% elif listing.status == 1 and listing.user_id == user.user_id %}
+                        <p class="action-btn">
+                        <a href="#" onclick="updateStatus('delete', '{{ listing.inventory_id }}', ''); return false;" class="btn btn-md btn-danger">Delete this herb</a>
+                        </p>
+
+                    {% elif listing.status == 2 and listing.user_id == user.user_id %}
+                        <p class="action-btn">
+                        <a href="#" onclick="updateStatus('ready', '{{ listing.inventory_id }}', 'Please pickup at Apt 1234!'); return false;" class="btn btn-md btn-success">Prepare Pickup</a>
+                        </p>
+
+                    {% elif listing.status == 3 and listing.pickup_user_id == user.user_id %}
+
+                        <p class="notification"><span class="badge badge-primary">{{ listing.pickup_instructions }}</span></p>
+
+                        <p class="action-btn">
+                        <a href="#" onclick="updateStatus('complete', '{{ listing.inventory_id }}', ''); return false;" class="btn btn-md btn-info">Complete Pickup</a>
+                        </p>
+
+                    {% else %}
+                        <p class="notification"><span class="badge badge-secondary">Waiting for user to respond</span></p>
+
+                    {% endif %}
+
+                </div>
 
             </div>
-            
-
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
+
+    {% endif %}
   
 {% endblock %}
+
