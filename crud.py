@@ -46,18 +46,32 @@ def get_herbs_in_inventory(complex_id, user_id):
     .filter(Inventory.exp_date >= datetime.now())\
     .order_by(Inventory.status.desc())
 
-    #multiple users works?
+
+def get_completed_orders(complex_id):
+    """Return all completed herb requests for a given complex"""
+
+
+    return Inventory.query.filter(Inventory.status == 4, Inventory.complex_id == complex_id)
 
 
 def get_user_by_email(email):
     """Return a user by email."""
+
+
     return User.query.filter(User.email == email.lower()).first()
 
+
 def get_user_by_id(user_id):
+    """Return a user by id"""
+
+
     return User.query.filter(User.user_id == user_id).first()
 
+
 def get_herb_by_inventory_id(inventory_id):
-    """ Get singular inventory """
+    """Get singular herb from inventory """
+
+
     return Inventory.query.filter_by(inventory_id=inventory_id).one()
 
 if __name__ == '__main__':

@@ -37,13 +37,11 @@ def homepage():
         return redirect('/logout')
 
     inventory = crud.get_herbs_in_inventory(user.complex_id, user.user_id)
-    print('Print inventory below')
-    print(inventory)
-    print('>>>>>>>>>>>>>>>')
-
     inventory_count = inventory.count()
+    
+    orders = crud.get_completed_orders(user.complex_id)
 
-    return render_template('homepage.html', user=user, inventory_count=inventory_count, inventory=inventory)
+    return render_template('homepage.html', user=user, inventory_count=inventory_count, inventory=inventory, orders=orders)
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -57,7 +55,6 @@ def register_user():
         email = request.form.get('email')
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
-
         complex_id = request.form.get('complex')
         #print('>>>>>>>>>>>>>>>>>>>>>>>')
         #print(complex_id)
@@ -175,13 +172,12 @@ def update_inventory_status():
 
     if inventory:
 
-        if task == 'pickup' and inventory.status == 1 and inventory.user_id != user_id: # can't book my own herb
+        if task == 'pickup' and inventory.status == 1 and inventory.user_id != user_id: # can't book my own herb. 
             inventory.pickup_user_id = user_id
             inventory.status = 2
-            inventory.last_update = datetime.now()
-            inventory.update_id = user_id
             
             # TODO last feature: notify inventory.user_id with email/txt pickup request 
+            # Christina says the user_id could be 500 error. Handle a bad input. Look into the flask library for requests. 
 
 
         elif task == 'ready' and inventory.status == 2 and inventory.user_id == user_id: # only person who posted it can update pickup instructions and make it available
@@ -190,30 +186,27 @@ def update_inventory_status():
 
             inventory.status = 3
             inventory.pickup_instructions = pickup_instructions # from FE
-            inventory.last_update = datetime.now()
-            inventory.update_id = user_id
 
             # TODO: notify inventory.pickup_user_id with email/txt incl. pickup instructions
 
         elif task == 'complete' and inventory.status == 3 and inventory.pickup_user_id == user_id: # only person that requested it can complete pckup
-
             inventory.status = 4
-            inventory.last_update = datetime.now()
-            inventory.update_id = user_id
 
             # TODO: notify inventory.user_id with email/txt completed msg
 
 
-        elif task == 'delete' and inventory.status == 1 and inventory.user_id == user_id: # only currently active item (non requtested) and person that posted it can delete a listing
-
+        elif task == 'delete' and inventory.status == 1 and inventory.user_id == user_id: # only currently active item (non requested) and person that posted it can delete a listing
             inventory.status = 0
-            inventory.last_update = datetime.now()
-            inventory.update_id = user_id
+
+        elif task == 'cancel' and inventory.status == 2 and inventory.pickup_user_id == user_id:
+            inventory.status = 1
 
         else:
             # non-valid task was passed
             return 'bad request!', 404
 
+        inventory.last_update = datetime.now()
+        inventory.update_id = user_id
         db.session.commit()
         return 'success', 200
 

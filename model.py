@@ -35,7 +35,7 @@ class User(db.Model):
     password = db.Column(db.String(10), nullable=False)
     fname = db.Column(db.String(20), nullable=False)
     lname = db.Column(db.String(20), nullable=False)
-    mobile_number = db.Column(db.Text, nullable=True)
+    mobile_number = db.Column(db.Text, nullable=False)
     complex_id = db.Column(db.Integer, db.ForeignKey('complexes.complex_id'), nullable=False)
 
     # Backrefs
@@ -71,7 +71,8 @@ class Inventory(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     pickup_user_id = db.Column(db.Integer, nullable=True)
     listing_date = db.Column(db.DateTime, nullable=False)
-    # Status: 0=incative/delisted, 1=active/listed, 2=pending, 3=pickup read, 4=completed
+    # Status: 0=inative/delisted, 1=active/listed, 2=pending, 3=pickup read, 4=completed
+    # define 0-4 more clearly. 10 person team and they inherit the system. create a status table w/ foreignkey
     status = db.Column(db.Integer, nullable=False)
     #user_herb_descript = db.Column(db.String(200), nullable=True)
     pickup_instructions = db.Column(db.String(200), nullable=True)

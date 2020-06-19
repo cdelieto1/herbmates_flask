@@ -3,8 +3,8 @@
 
 {% block body %}
 
-    <h1>Welcome to Herbmates, {{ user.fname|title }}!</h1>
-
+<div class="content">
+    <h1>Welcome to Herbmates, <span class="name">{{ user.fname|title }}</span>!</h1>
     <h3>Need an Herb? <a href="/list">Donating</a> an herb?</h3>
 
     {% if not inventory_count > 0  %}
@@ -37,12 +37,20 @@
 
                     {% elif listing.status == 1 and listing.user_id == user.user_id %}
                         <p class="action-btn">
-                        <a href="#" onclick="updateStatus('delete', '{{ listing.inventory_id }}', ''); return false;" class="btn btn-md btn-danger">Delete this herb</a>
+                        <a href="#" onclick="confirmDeletion('{{ listing.inventory_id }}'); return false;" class="btn btn-md btn-danger">Delete this herb</a>
+                        </p>
+
+                    {% elif listing.status == 2 and listing.pickup_user_id == user.user_id %}
+
+                        <p class="notification"><span class="badge badge-secondary">Waiting for user to respond</span></p>
+
+                        <p class="action-btn">
+                        <a href="#" onclick="updateStatus('cancel', '{{ listing.inventory_id }}', ''); return false;" class="btn btn-md btn-danger">Cancel pickup request</a>
                         </p>
 
                     {% elif listing.status == 2 and listing.user_id == user.user_id %}
                         <p class="action-btn">
-                        <a href="#" onclick="updateStatus('ready', '{{ listing.inventory_id }}', 'Please pickup at Apt 1234!'); return false;" class="btn btn-md btn-success">Prepare Pickup</a>
+                        <a href="#" onclick="pickupReady('{{ listing.inventory_id }}'); return false;" class="btn btn-md btn-success">Prepare Pickup</a>
                         </p>
 
                     {% elif listing.status == 3 and listing.pickup_user_id == user.user_id %}
@@ -55,16 +63,16 @@
 
                     {% else %}
                         <p class="notification"><span class="badge badge-secondary">Waiting for user to respond</span></p>
-
                     {% endif %}
 
                 </div>
-
+            
             </div>
             {% endfor %}
         </div>
-
+    </div>
     {% endif %}
+</div>
   
 {% endblock %}
 

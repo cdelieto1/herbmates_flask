@@ -1,7 +1,11 @@
 /* Style the HerbMates site */
 
-div.row {
-    margin: 5px !important;
+div.content {
+    margin: 15px !important;
+}
+
+span.name {
+    color: green;
 }
 
 div.navbar-header img {
@@ -27,4 +31,8 @@ p.action-btn {
 p.notification {
     text-align: center;
     padding-top: 10px;
+}
+
+.swal2-popup {
+  font-size: 1.6rem !important;
 }
