@@ -5,7 +5,7 @@ from flask import (Flask, render_template, request, flash, session,
 from datetime import datetime
 from model import *
 import crud
-
+from twilio.rest import Client
 from jinja2 import StrictUndefined
 
 
@@ -13,6 +13,12 @@ app = Flask(__name__)
 app.secret_key = "dev"
 app.jinja_env.undefined = StrictUndefined
 
+#Twilio config
+account_sid = 'AC94673bf6477a6a9f6c7bbc82c98fbe34'
+auth_token = '6a5d4877815dd4b4482cfc36d8b7ea82'
+twilio_number = '+12029461857'
+my_cell = '+19513759375'
+client = Client(account_sid, auth_token)
 
 def check_auth():
     try:
@@ -31,17 +37,19 @@ def homepage():
 
     if not check_auth():
         return redirect('/login')
-
+ 
     user = crud.get_user_by_id(session['user_id'])
     if not user:
         return redirect('/logout')
 
     inventory = crud.get_herbs_in_inventory(user.complex_id, user.user_id)
-    inventory_count = inventory.count()
-    
-    orders = crud.get_completed_orders(user.complex_id)
 
-    return render_template('homepage.html', user=user, inventory_count=inventory_count, inventory=inventory, orders=orders)
+    inventory_count = inventory.count()
+    #inventory wouldn't pass an integer in templating.
+    
+    completed_listings = crud.get_completed_listings(user.complex_id)
+
+    return render_template('homepage.html', user=user, inventory_count=inventory_count, inventory=inventory, completed_listings=completed_listings)
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -56,8 +64,7 @@ def register_user():
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
         complex_id = request.form.get('complex')
-        #print('>>>>>>>>>>>>>>>>>>>>>>>')
-        #print(complex_id)
+        mobile = request.form.get('mobile')
 
         if password != confirm_password:
             flash('Passwords do not match. Try again')
@@ -65,9 +72,9 @@ def register_user():
         user = crud.get_user_by_email(email)
 
         if user:
-            flash('Cannot create an account')
+            flash('This email has already been registered. Please sign in instead or reset your password!')
         else:
-            user = crud.create_user(email, password, fname, lname, complex_id)
+            user = crud.create_user(email, password, fname, lname, complex_id, mobile)
             session['is_authenticated'] = True
             session['user_id'] = user.user_id
             flash('Account created!')
@@ -75,19 +82,20 @@ def register_user():
 
     complexes = Complex.query.all()
 
-    return render_template('signup.html', complexes=complexes)
+    return render_template('login.html', complexes=complexes)
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """Login to Herbmates"""
 
-
     email = request.form.get('email')
     password = request.form.get('password')
+    complexes = Complex.query.all()
+    #complexes populates the dropdown tab on the login page
 
     if request.method == 'POST':
-        user = crud.get_user_by_email(email) #just a query to see if they exist
+        user = crud.get_user_by_email(email) # a query to see if they exist first
         if user and user.password == password:
             #log me in / create session
             session['is_authenticated'] = True
@@ -96,7 +104,7 @@ def login():
         else:
             flash('Either email or password are incorrect!')
 
-    return render_template('login.html')
+    return render_template('login.html', complexes=complexes)
 
 
 @app.route('/list')
@@ -119,17 +127,10 @@ def add_to_list():
         return redirect('/login')
 
     user = crud.get_user_by_id(session['user_id'])
-    #print('>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-    #print(user.user_id)
-    #print(user.complex_id)
 
     herb_id = request.form.get('herb')
-    #print('>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-    #print(herb_id)
 
     listing_date=datetime.now()
-    #print('>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-    #print(listing_date)
 
     #TODO: add a qty field into form. For now, we set it to 1 as a forced value.
     herb_qty = request.form.get('herb_qty')
@@ -159,15 +160,12 @@ def update_inventory_status():
     
     print(request)
 
-    #replace task and inventory_id w/ ajax data on base.js
     task = request.form.get('task') # pickup, ready, complete, delete
-    print(task)
+
     inventory_id = request.form.get('inventory_id')
-    print(inventory_id)
 
 
-
-    #write crud function to lookup singular inventory
+    #lookup singular inventory
     inventory = crud.get_herb_by_inventory_id(inventory_id)
 
     if inventory:
@@ -176,30 +174,53 @@ def update_inventory_status():
             inventory.pickup_user_id = user_id
             inventory.status = 2
             
-            # TODO last feature: notify inventory.user_id with email/txt pickup request 
             # Christina says the user_id could be 500 error. Handle a bad input. Look into the flask library for requests. 
-
+            
+            message = client.messages \
+                .create(
+                     body='%s requested a pickup for %s.' % (inventory.pickup_user.fname.title(), inventory.herb.herb_name),
+                     from_=twilio_number,
+                     to=inventory.user.mobile_number
+                 )
 
         elif task == 'ready' and inventory.status == 2 and inventory.user_id == user_id: # only person who posted it can update pickup instructions and make it available
 
             pickup_instructions = request.form.get('pickup_instructions')
 
             inventory.status = 3
-            inventory.pickup_instructions = pickup_instructions # from FE
+            inventory.pickup_instructions = pickup_instructions # this comes from the FE
 
             # TODO: notify inventory.pickup_user_id with email/txt incl. pickup instructions
+            message = client.messages \
+                .create(
+                     body='Your %s is ready. Get it by: %s' % (inventory.herb.herb_name, inventory.pickup_instructions),
+                     from_=twilio_number,
+                     to=inventory.pickup_user.mobile_number
+                 )
 
         elif task == 'complete' and inventory.status == 3 and inventory.pickup_user_id == user_id: # only person that requested it can complete pckup
             inventory.status = 4
 
             # TODO: notify inventory.user_id with email/txt completed msg
-
+            message = client.messages \
+                .create(
+                     body='Awesome news! %s picked up your %s.' % (inventory.pickup_user.fname.title(), inventory.herb.herb_name),
+                     from_=twilio_number,
+                     to=inventory.user.mobile_number
+                 )
 
         elif task == 'delete' and inventory.status == 1 and inventory.user_id == user_id: # only currently active item (non requested) and person that posted it can delete a listing
             inventory.status = 0
 
         elif task == 'cancel' and inventory.status == 2 and inventory.pickup_user_id == user_id:
             inventory.status = 1
+
+            message = client.messages \
+                .create(
+                     body='Nevermind! %s cancelled the request for your %s.' % (inventory.pickup_user.fname.title(), inventory.herb.herb_name),
+                     from_=twilio_number,
+                     to=inventory.user.mobile_number
+                 )
 
         else:
             # non-valid task was passed

@@ -1,5 +1,6 @@
 /* Style the HerbMates site */
 
+
 div.content {
     margin: 15px !important;
 }
@@ -36,3 +37,4 @@ p.notification {
 .swal2-popup {
   font-size: 1.6rem !important;
 }
+

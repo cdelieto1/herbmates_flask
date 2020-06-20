@@ -4,15 +4,15 @@ from datetime import datetime, timedelta
 from model import db, User, Complex, Description, Inventory, Messaging
 
 
-def create_user(email, password, fname, lname, complex_id):
+def create_user(email, password, fname, lname, complex_id, mobile_number):
     """Create and return a new user."""
 
     user = User(email=email, 
                 password=password, 
                 fname=fname, 
                 lname=lname,
-                complex_id=complex_id)
-
+                complex_id=complex_id,
+                mobile_number=mobile_number)
     db.session.add(user)
     db.session.commit()
 
@@ -47,7 +47,7 @@ def get_herbs_in_inventory(complex_id, user_id):
     .order_by(Inventory.status.desc())
 
 
-def get_completed_orders(complex_id):
+def get_completed_listings(complex_id):
     """Return all completed herb requests for a given complex"""
 
 

@@ -21,9 +21,9 @@
           
                 
                 <div class="well {% if listing.status in [2,3] %}pending{% endif %}">
-                    Herb:
-                      <b>{{ listing.herb.herb_name }}</b>
+                    <p>Herb: <b>{{ listing.herb.herb_name }}</b></p>
                     <p>This herb is currently owned by: <b>{{ listing.user.fname|title }}</b> </p>
+                    <p>Quantity: <b>{{ listing.herb_qty }}</b></p>
                     <img src="/static/img{{ listing.herb.img_url }}">
                     </a>
                     <p>Additional info for this bundle: {{ listing.pickup_instructions }}</p>
@@ -66,13 +66,46 @@
                     {% endif %}
 
                 </div>
-            
+
             </div>
             {% endfor %}
         </div>
-    </div>
+    
+
+    <!--
+    <p>Completed history of APT COMPLEX</p>
+    {% for listing in completed_listings %}
+
+        <div class="row">
+            Inventory ID: {{ listing.inventory_id }}
+            <br>
+            Listing User: {{ listing.user.fname }}
+            <br>
+            Pickup User: {{ listing.pickup_user.fname }}
+            <br>
+            Listing Date: {{ listing.listing_date }}
+        </div>
+
+    {% endfor %}
+
+    <p>Complete history of USER INVENTORY</p>
+    {% for listing in user.inventories %}
+        <div class="row">
+            Inventory ID: {{ listing.inventory_id }}
+            <br>
+            Listing User: {{ user.fname }}
+            <br>
+            Listing Date: {{ listing.listing_date }}
+        </div>
+    {% endfor %}
+    -->
+
+
+    </div> <!-- content end -->:
     {% endif %}
+
 </div>
+
   
 {% endblock %}
 
