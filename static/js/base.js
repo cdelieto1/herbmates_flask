@@ -1,9 +1,10 @@
 //The functions to manuever between an herb owner and an herb requester using AJAX and alerts. 
+
 const Toast = Swal.mixin({
   toast: true,
   position: 'top-end',
   showConfirmButton: false,
-  timer: 3000,
+  timer: 2000,
   timerProgressBar: true,
   onOpen: (toast) => {
     toast.addEventListener('mouseenter', Swal.stopTimer)
@@ -43,15 +44,6 @@ function updateStatus(inTask, inInventoryId, inPickupInstr) {
             msg = "Pickup request successfully cancelled!"
           }
 
-          // TODO: sweetalert display message up front
-          /*Swal.fire(
-            'Success!',
-            msg,
-            'success'
-          ).then((result) => {
-            location.reload();
-          })*/
-
           Toast.fire({
             icon: 'success',
             title: msg
@@ -62,7 +54,7 @@ function updateStatus(inTask, inInventoryId, inPickupInstr) {
        } else {
           Swal.fire(
             'Try again',
-            'Something went wrong',
+            'Something went wrong.',
             'error'
           )
 
