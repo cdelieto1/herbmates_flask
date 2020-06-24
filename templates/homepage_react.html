@@ -1,0 +1,129 @@
+{% extends 'base_react.html' %}
+{% block title %}HerbMates{% endblock %}
+
+{% block body %}
+
+<div class="content">
+    <h1>Welcome to Herbmates, <span class="name">{{ user.fname|title }}</span>!</h1>
+    <h3>Need an Herb? <a href="/list">Donating</a> an herb?</h3>
+
+<!-- React begins here, populate inventory below the header -->
+
+{% block js %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.js"></script>
+  <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>  
+  <script src="/static/js/homepage.jsx" type="text/jsx"></script>
+{% endblock %}
+
+<!-- Mount react components on to this element. -->
+<div id="app"></div>
+
+    {% if not inventory_count > 0  %}
+
+        <p>There are currently no herbs listed at the {{ user.complexes.complex_name|title }}. Why don't you DONATE one?</p>
+
+    {% else %}
+
+        <p>Welcome, currently there are <b>{{ inventory_count }}</b> herb(s) available in the <b>"{{ user.complexes.complex_name|title }}"</b> building: </p>
+
+        <div id="herb-list" class="row">
+            {% for listing in inventory %}
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 herb-summary">
+          
+                
+                <div class="well {% if listing.status in [2,3] %}pending{% endif %}">
+                    <p>Herb: <b>{{ listing.herb.herb_name }}</b></p>
+                    <p>This herb is currently owned by: <b>{{ listing.user.fname|title }}</b> </p>
+                    <p>Quantity: <b>{{ listing.herb_qty }}</b></p>
+                    <img src="/static/img{{ listing.herb.img_url }}">
+                    </a>
+                    <p>Additional info for this bundle: {{ listing.pickup_instructions }}</p>
+                    <p>This herb will expire on: {{ listing.exp_date.strftime('%A %d, %B %Y') }}</p>
+
+                    <!-- BUTTON LOGIC -->
+                    {% if listing.status == 1 and listing.user_id != user.user_id %}
+                        <p class="action-btn">
+                        <a href="#" onclick="updateStatus('pickup', '{{ listing.inventory_id }}', ''); return false;" class="btn btn-md btn-primary">Request this herb</a>
+                        </p>
+
+                    {% elif listing.status == 1 and listing.user_id == user.user_id %}
+                    <!--You listed the herb AND you are the person currently signed in-->
+                        <p class="action-btn">
+                        <a href="#" onclick="confirmDeletion('{{ listing.inventory_id }}'); return false;" class="btn btn-md btn-danger">Delete this herb</a>
+                        </p>
+
+                    {% elif listing.status == 2 and listing.pickup_user_id == user.user_id %}
+                    <!--The herb has been requsted AND you are the requester of this herb-->
+
+                        <p class="notification"><span class="badge badge-secondary">Waiting for user to respond</span></p>
+
+                        <p class="action-btn">
+                        <a href="#" onclick="updateStatus('cancel', '{{ listing.inventory_id }}', ''); return false;" class="btn btn-md btn-danger">Cancel pickup request</a>
+                        </p>
+
+                    {% elif listing.status == 2 and listing.user_id == user.user_id %}
+                    <!--The herb has been requsted AND you are the owner of the herb-->
+
+                        <p class="action-btn">
+                        <a href="#" onclick="pickupReady('{{ listing.inventory_id }}'); return false;" class="btn btn-md btn-success">Prepare Pickup</a>
+                        </p>
+
+                    {% elif listing.status == 3 and listing.pickup_user_id == user.user_id %}
+                    <!--The herb has been confirmed AND you are the owner of the herb-->
+
+                        <p class="notification"><span class="badge badge-primary">{{ listing.pickup_instructions }}</span></p>
+                        <p class="action-btn">
+                        <a href="#" onclick="updateStatus('complete', '{{ listing.inventory_id }}', ''); return false;" class="btn btn-md btn-info">Complete Pickup</a>
+                        </p>
+
+                    {% else %}
+                        <!--Default for in case none of the IF statements catch the flow. The SQLALCHEMY query
+                        already omits deleted (status=0) and completed (status=4) from this page also.-->
+                        <p class="notification"><span class="badge badge-secondary">Waiting for user to respond</span></p>
+                    {% endif %}
+
+                </div>
+
+            </div>
+            {% endfor %}
+        </div>
+    
+
+    <!--
+    <p>Completed history of APT COMPLEX</p>
+    {% for listing in completed_listings %}
+
+        <div class="row">
+            Inventory ID: {{ listing.inventory_id }}
+            <br>
+            Listing User: {{ listing.user.fname }}
+            <br>
+            Pickup User: {{ listing.pickup_user.fname }}
+            <br>
+            Listing Date: {{ listing.listing_date }}
+        </div>
+
+    {% endfor %}
+
+    <p>Complete history of USER INVENTORY</p>
+    {% for listing in user.inventories %}
+        <div class="row">
+            Inventory ID: {{ listing.inventory_id }}
+            <br>
+            Listing User: {{ user.fname }}
+            <br>
+            Listing Date: {{ listing.listing_date }}
+        </div>
+    {% endfor %}
+    -->
+
+
+    </div> <!-- content end -->:
+    {% endif %}
+
+</div>
+
+  
+{% endblock %}
+
