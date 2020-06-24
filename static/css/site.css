@@ -1,5 +1,12 @@
 /* Style the HerbMates site */
 
+div.list {
+    background: url("/static/img/herb.jpg");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: black;
+}
 
 div.content {
     margin: 15px !important;

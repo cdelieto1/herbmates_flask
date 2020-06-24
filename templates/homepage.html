@@ -4,7 +4,7 @@
 {% block body %}
 
 <div class="content">
-    <h1>Welcome to Herbmates, <span class="name">{{ user.fname|title }}</span>!</h1>
+    <h1>Welcome to Herbmates, <span class="name">{{ user.fname.strip()|title }}!</span></h1>
     <h3>Need an Herb? <a href="/list">Donating</a> an herb?</h3>
 
     {% if not inventory_count > 0  %}
@@ -27,7 +27,7 @@
                     <img src="/static/img{{ listing.herb.img_url }}">
                     </a>
                     <p>Additional info for this bundle: {{ listing.pickup_instructions }}</p>
-                    <p>This herb will expire on: {{ listing.exp_date }}</p>
+                    <p>This herb will expire on: {{ listing.exp_date.strftime('%A %d, %B %Y') }}</p>
 
                     <!-- BUTTON LOGIC -->
                     {% if listing.status == 1 and listing.user_id != user.user_id %}
@@ -41,9 +41,7 @@
                         </p>
 
                     {% elif listing.status == 2 and listing.pickup_user_id == user.user_id %}
-
                         <p class="notification"><span class="badge badge-secondary">Waiting for user to respond</span></p>
-
                         <p class="action-btn">
                         <a href="#" onclick="updateStatus('cancel', '{{ listing.inventory_id }}', ''); return false;" class="btn btn-md btn-danger">Cancel pickup request</a>
                         </p>

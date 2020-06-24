@@ -5,6 +5,7 @@ body {
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
+    color: white;
 }
 
 }
@@ -19,22 +20,14 @@ div.container {
 }
 
 .flash-msg {
-    color: white;
-    font-family: calibria;
-}
-
-/* The footer always appears at the bottom of the browser window. */
-
-footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;  /* required because fixed position */
+    color: red;
+    font-family: arial;
 }
 
 
 .login-register-form-section {
     max-width: 350px;
-    margin: 0 auto;
+    margin: 90 auto;
 }
 
 .login-register-form-section i {

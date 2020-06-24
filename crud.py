@@ -1,18 +1,27 @@
 # """CRUD operations."""
 
 from datetime import datetime, timedelta
-from model import db, User, Complex, Description, Inventory, Messaging
+from model import db, User, Complex, Description, Inventory
+import os
+
+# Twilio config
+from twilio.rest import Client
+
+account_sid = os.environ['TWILIO_ACCOUNT_SID']
+auth_token = os.environ['TWILIO_AUTH_TOKEN']
+twilio_number = '+12029461857'
+client = Client(account_sid, auth_token)
 
 
 def create_user(email, password, fname, lname, complex_id, mobile_number):
     """Create and return a new user."""
 
-    user = User(email=email, 
-                password=password, 
-                fname=fname, 
-                lname=lname,
+    user = User(email=email.strip(), 
+                password=password,
+                fname=fname.strip(), 
+                lname=lname.strip(),
                 complex_id=complex_id,
-                mobile_number=mobile_number)
+                mobile_number=mobile_number.strip())
     db.session.add(user)
     db.session.commit()
 
@@ -50,13 +59,11 @@ def get_herbs_in_inventory(complex_id, user_id):
 def get_completed_listings(complex_id):
     """Return all completed herb requests for a given complex"""
 
-
     return Inventory.query.filter(Inventory.status == 4, Inventory.complex_id == complex_id)
 
 
 def get_user_by_email(email):
     """Return a user by email."""
-
 
     return User.query.filter(User.email == email.lower()).first()
 
@@ -64,15 +71,33 @@ def get_user_by_email(email):
 def get_user_by_id(user_id):
     """Return a user by id"""
 
-
     return User.query.filter(User.user_id == user_id).first()
 
 
 def get_herb_by_inventory_id(inventory_id):
     """Get singular herb from inventory """
 
-
     return Inventory.query.filter_by(inventory_id=inventory_id).one()
+
+
+def send_notification(to_number, msg):
+
+    try:
+        message = client.messages \
+            .create(
+                 body=msg,
+                 from_=twilio_number,
+                 to=to_number
+             )
+    except Exception as error:
+        # TODO: maybe send out email if twilio fails?
+
+        print('Something is wrong with your Twilio credentials: %s' % error)
+        print(f'Something is wrong with your Twilio credentials: {error}')
+        return True
+
+    return True
+
 
 if __name__ == '__main__':
     from server import app

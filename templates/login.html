@@ -11,8 +11,6 @@
     rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="/static/css/login.css"/>
 
-    <h2>Log into your HerbMates Account!</h2></b>
-
     {% for msg in get_flashed_messages() %}
       <p class="flash-msg">
         {{ msg }}</b>
@@ -24,6 +22,8 @@
     <br>
     <div class="row">
         <div class="container">
+              <h2>HerbMates Login:</h2></b></br>
+
             <div class="login-register-form-section">
                 <ul class="nav nav-tabs" role="tablist">
                     <li class="active"><a href="#login" data-toggle="tab">Login</a></li>

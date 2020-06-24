@@ -4,21 +4,16 @@ from flask import (Flask, render_template, request, flash, session,
                    redirect)
 from datetime import datetime
 from model import *
+from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
 import crud
-from twilio.rest import Client
 from jinja2 import StrictUndefined
 
 
 app = Flask(__name__)
 app.secret_key = "dev"
 app.jinja_env.undefined = StrictUndefined
-
-#Twilio config
-account_sid = 'AC94673bf6477a6a9f6c7bbc82c98fbe34'
-auth_token = '6a5d4877815dd4b4482cfc36d8b7ea82'
-twilio_number = '+12029461857'
-my_cell = '+19513759375'
-client = Client(account_sid, auth_token)
+ma = Marshmallow(app)
 
 def check_auth():
     try:
@@ -45,11 +40,12 @@ def homepage():
     inventory = crud.get_herbs_in_inventory(user.complex_id, user.user_id)
 
     inventory_count = inventory.count()
-    #inventory wouldn't pass an integer in templating.
+    #inventory wouldn't pass a count in templating.
     
     completed_listings = crud.get_completed_listings(user.complex_id)
 
     return render_template('homepage.html', user=user, inventory_count=inventory_count, inventory=inventory, completed_listings=completed_listings)
+
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -80,7 +76,7 @@ def register_user():
             flash('Account created!')
             return redirect('/')
 
-    complexes = Complex.query.all()
+    #complexes = Complex.query.all()
 
     return render_template('login.html', complexes=complexes)
 
@@ -158,14 +154,11 @@ def update_inventory_status():
 
     user_id = session['user_id'] 
     
-    print(request)
-
     task = request.form.get('task') # pickup, ready, complete, delete
 
     inventory_id = request.form.get('inventory_id')
 
-
-    #lookup singular inventory
+    #lookup singular herb in inventory
     inventory = crud.get_herb_by_inventory_id(inventory_id)
 
     if inventory:
@@ -175,39 +168,21 @@ def update_inventory_status():
             inventory.status = 2
             
             # Christina says the user_id could be 500 error. Handle a bad input. Look into the flask library for requests. 
-            
-            message = client.messages \
-                .create(
-                     body='%s requested a pickup for %s.' % (inventory.pickup_user.fname.title(), inventory.herb.herb_name),
-                     from_=twilio_number,
-                     to=inventory.user.mobile_number
-                 )
+            crud.send_notification(inventory.user.mobile_number, f'{inventory.pickup_user.fname.strip().title()} requested a pickup for {inventory.herb.herb_name}')
 
         elif task == 'ready' and inventory.status == 2 and inventory.user_id == user_id: # only person who posted it can update pickup instructions and make it available
 
             pickup_instructions = request.form.get('pickup_instructions')
 
             inventory.status = 3
-            inventory.pickup_instructions = pickup_instructions # this comes from the FE
+            inventory.pickup_instructions = pickup_instructions # this comes from the FE from onlclick = "updateStatus"
 
-            # TODO: notify inventory.pickup_user_id with email/txt incl. pickup instructions
-            message = client.messages \
-                .create(
-                     body='Your %s is ready. Get it by: %s' % (inventory.herb.herb_name, inventory.pickup_instructions),
-                     from_=twilio_number,
-                     to=inventory.pickup_user.mobile_number
-                 )
+            crud.send_notification(inventory.pickup_user.mobile_number, f'Your {inventory.herb.herb_name} is ready. Get it by: {inventory.pickup_instructions}')
 
         elif task == 'complete' and inventory.status == 3 and inventory.pickup_user_id == user_id: # only person that requested it can complete pckup
             inventory.status = 4
 
-            # TODO: notify inventory.user_id with email/txt completed msg
-            message = client.messages \
-                .create(
-                     body='Awesome news! %s picked up your %s.' % (inventory.pickup_user.fname.title(), inventory.herb.herb_name),
-                     from_=twilio_number,
-                     to=inventory.user.mobile_number
-                 )
+            crud.send_notification(inventory.user.mobile_number, f'Awesome news! {inventory.pickup_user.fname.strip().title()} picked up your {inventory.herb.herb_name}')
 
         elif task == 'delete' and inventory.status == 1 and inventory.user_id == user_id: # only currently active item (non requested) and person that posted it can delete a listing
             inventory.status = 0
@@ -215,12 +190,7 @@ def update_inventory_status():
         elif task == 'cancel' and inventory.status == 2 and inventory.pickup_user_id == user_id:
             inventory.status = 1
 
-            message = client.messages \
-                .create(
-                     body='Nevermind! %s cancelled the request for your %s.' % (inventory.pickup_user.fname.title(), inventory.herb.herb_name),
-                     from_=twilio_number,
-                     to=inventory.user.mobile_number
-                 )
+            crud.send_notification(inventory.user.mobile_number, f'Nevermind! {inventory.pickup_user.fname.strip().title()} cancelled the request for your {inventory.herb.herb_name}')
 
         else:
             # non-valid task was passed
@@ -240,7 +210,6 @@ def update_inventory_status():
 def logout():
     session.clear()
     return redirect('/login')
-
 
 
 
