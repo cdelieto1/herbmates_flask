@@ -102,7 +102,7 @@ function pickupReady(inInventoryId) {
   
 
 }
-
+// Cancellations don't need to be sent to the BE so no ajax gets triggered. 
 // Warning for function naming: "is" implies Boolean.
 
 // AJAX needed to POST back to the route

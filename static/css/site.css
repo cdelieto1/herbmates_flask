@@ -6,6 +6,7 @@ div.list {
     background-position: center;
     background-attachment: fixed;
     color: black;
+    margin: 5px;
 }
 
 div.content {
@@ -16,15 +17,33 @@ span.name {
     color: green;
 }
 
-div.navbar-header img {
+/*a.navbar-brand { 
+    margin-left: -60px !important;
+    font-size: 22px;
+
+}*/
+/*div.navbar-collapse {
+    font-size: 18px;
+    border: blue;
+}*/
+/*div.navbar-header img {
     width: 40px;
     float: left;
+    margin-left: -100px;
     margin-top: 7px;
     margin-right: 7px;
+}*/
+
+
+div.card {
+    margin: 10px;
 }
 
-div.well img {
-    width: 90px;
+div.bootcards-list img {
+    width: 90px !important;
+    border-radius: 100px;
+    overflow: hidden;
+    border: 1px #9c9999 solid;
 }
 
 div.pending {
@@ -45,3 +64,8 @@ p.notification {
   font-size: 1.6rem !important;
 }
 
+.card-content {
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}

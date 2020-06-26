@@ -90,9 +90,8 @@ def send_notification(to_number, msg):
                  to=to_number
              )
     except Exception as error:
-        # TODO: maybe send out email if twilio fails?
+        # LATER TODO: maybe send out email if twilio fails?
 
-        print('Something is wrong with your Twilio credentials: %s' % error)
         print(f'Something is wrong with your Twilio credentials: {error}')
         return True
 

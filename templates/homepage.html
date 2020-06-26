@@ -15,12 +15,25 @@
 
         <p>Welcome, currently there are <b>{{ inventory_count }}</b> herb(s) available in the <b>"{{ user.complexes.complex_name|title }}"</b> building: </p>
 
+<!--         <article class="card animated fadeInLeft">
+        <img class=""/>
+
+        <div class="card-block">
+        <h4 class="card-title">Animal Farm</h4>
+
+        <h6 class="text-muted">George Orwell</h6>
+
+        <p class="card-text">Tired of their servitude to man, a group of farm animals revolt and establish their own society, only to be betrayed into worse servitude by their leaders, the pigs. This satire addresses the communist philosophy the Soviet Union.</p>
+
+        <a href="#" class="btn btn-primary">Read more</a>
+        </div>
+        </article> -->
+
         <div id="herb-list" class="row">
             {% for listing in inventory %}
-            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 herb-summary">
-          
+            <div class="card {% if listing.status in [2,3] %}pending{% endif %}">
+            <div class="bootcards-list col-sm-10">
                 
-                <div class="well {% if listing.status in [2,3] %}pending{% endif %}">
                     <p>Herb: <b>{{ listing.herb.herb_name }}</b></p>
                     <p>This herb is currently owned by: <b>{{ listing.user.fname|title }}</b> </p>
                     <p>Quantity: <b>{{ listing.herb_qty }}</b></p>
@@ -64,7 +77,6 @@
                     {% endif %}
 
                 </div>
-
             </div>
             {% endfor %}
         </div>

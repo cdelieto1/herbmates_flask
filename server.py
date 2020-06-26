@@ -1,11 +1,11 @@
 """Server for movie ratings app."""
 
 from flask import (Flask, render_template, request, flash, session,
-                   redirect)
+                   redirect, jsonify)
 from datetime import datetime
 from model import *
 from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
+# from flask_marshmallow import Marshmallow
 import crud
 from jinja2 import StrictUndefined
 
@@ -13,7 +13,10 @@ from jinja2 import StrictUndefined
 app = Flask(__name__)
 app.secret_key = "dev"
 app.jinja_env.undefined = StrictUndefined
-ma = Marshmallow(app)
+#ma = Marshmallow(app)
+
+STATIC_URL = '/static/'
+IMG_ROOT ='%s%s' % (STATIC_URL, 'img/')
 
 def check_auth():
     try:
@@ -46,7 +49,54 @@ def homepage():
 
     return render_template('homepage.html', user=user, inventory_count=inventory_count, inventory=inventory, completed_listings=completed_listings)
 
+@app.route('/react')
+def homepage_react():
+    """View REACT homepage ONLY IF authenticated."""
 
+    if not check_auth():
+        return redirect('/login')
+ 
+    #user = crud.get_user_by_id(session['user_id'])
+    #if not user:
+    #    return redirect('/logout')
+
+    return render_template('homepage_react.html')
+
+
+@app.route('/get-inventory', methods=['GET'])
+def get_inventory():
+    """View REACT homepage ONLY IF authenticated."""
+
+    if not check_auth():
+        return redirect('/login')
+ 
+    user = crud.get_user_by_id(session['user_id'])
+    if not user:
+        return redirect('/logout')
+
+    inventory = crud.get_herbs_in_inventory(user.complex_id, user.user_id)
+
+    listings = []
+    for listing in inventory:
+        listings.append({
+            'inventory_id': listing.inventory_id,
+            'status': listing.status,
+            'fname': listing.user.fname.title(),
+            'herb_name': listing.herb.herb_name,
+            'herb_qty': listing.herb_qty,
+            'exp_date': listing.exp_date.strftime('%A %d, %B %Y'),
+            'img_url': '%s%s' % (IMG_ROOT, listing.herb.img_url),
+            'pickup_instructions': listing.pickup_instructions})
+
+    print('>>>>>>>>>>>>>>>>>>')
+    print(listings)
+
+
+    #inventory_count = inventory.count()
+    #completed_listings = crud.get_completed_listings(user.complex_id)
+
+    return jsonify({'success': True,
+                    'data': listings})
 
 @app.route('/signup', methods=['GET', 'POST'])
 def register_user():
@@ -76,7 +126,7 @@ def register_user():
             flash('Account created!')
             return redirect('/')
 
-    #complexes = Complex.query.all()
+    complexes = Complex.query.all()
 
     return render_template('login.html', complexes=complexes)
 
@@ -153,10 +203,9 @@ def update_inventory_status():
         return 'user not authenticated', 403 # forbidden
 
     user_id = session['user_id'] 
-    
     task = request.form.get('task') # pickup, ready, complete, delete
-
-    inventory_id = request.form.get('inventory_id')
+    inventory_id = request.form.get('inventory_id') #isdigit()
+    pickup_instructions = request.form.get('pickup_instructions') #look into putting this with the other request libraries
 
     #lookup singular herb in inventory
     inventory = crud.get_herb_by_inventory_id(inventory_id)
@@ -167,19 +216,18 @@ def update_inventory_status():
             inventory.pickup_user_id = user_id
             inventory.status = 2
             
-            # Christina says the user_id could be 500 error. Handle a bad input. Look into the flask library for requests. 
             crud.send_notification(inventory.user.mobile_number, f'{inventory.pickup_user.fname.strip().title()} requested a pickup for {inventory.herb.herb_name}')
 
         elif task == 'ready' and inventory.status == 2 and inventory.user_id == user_id: # only person who posted it can update pickup instructions and make it available
 
-            pickup_instructions = request.form.get('pickup_instructions')
+            #pickup_instructions = request.form.get('pickup_instructions') #look into putting this with the other request libraries
 
             inventory.status = 3
             inventory.pickup_instructions = pickup_instructions # this comes from the FE from onlclick = "updateStatus"
 
             crud.send_notification(inventory.pickup_user.mobile_number, f'Your {inventory.herb.herb_name} is ready. Get it by: {inventory.pickup_instructions}')
 
-        elif task == 'complete' and inventory.status == 3 and inventory.pickup_user_id == user_id: # only person that requested it can complete pckup
+        elif task == 'complete' and inventory.status == 3 and inventory.pickup_user_id == user_id: # only person that requested it can complete pickup
             inventory.status = 4
 
             crud.send_notification(inventory.user.mobile_number, f'Awesome news! {inventory.pickup_user.fname.strip().title()} picked up your {inventory.herb.herb_name}')
