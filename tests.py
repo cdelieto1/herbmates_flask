@@ -1,61 +1,73 @@
-import unittest
-import json
-#from model import *
-from server import *
+from unittest import TestCase
+from server import app
+from seed_database import example_data
+from flask import session
 
-# set our application to testing mode
-app.testing = True
-
-
-class TestFlaskRoutes(unittest.TestCase):
-    """Test Flask routes."""
-
-    def test_index(self):
-        """Make sure index page returns correct HTML."""
-
-        # Create a test client
-        client = app.test_client()
-
-        # Use the test client to make requests
-        result = client.get('/login')
-
-        # Compare result.data with assert method
-        self.assertIn(b'<h1>', result.data)
-
-    # def test_favorite_color_form(self):
-    #     """Test that /fav-color route processes form data correctly."""
-
-    #     client = app.test_client()
-    #     result = client.post('/fav-color', data={'color': 'blue'})
-
-    #     self.assertIn(b'Woah! I like blue, too', result.data)
+#set our application to testing mode. test_client returns a pretend brwoser. 
+#app.testing = True
 
 
-class MyAppIntegrationTestCase2(unittest.TestCase):
-    """Examples of integration tests: testing Flask server."""
+class TestFlaskLoginRoute(TestCase):
+    """Stuff to do before testing"""
 
     def setUp(self):
-        # print("(setUp ran)")
+        """Stuff to do before every test."""
+
+        # Get the Flask test client
         self.client = app.test_client()
         app.config['TESTING'] = True
 
-    def tearDown(self):
-        # We don't need to do anything here; we could just
-        # not define this method at all, but we have a stub
-        # here as an example.
-        # print("(tearDown ran)")
-        return
 
     def test_index(self):
         result = self.client.get('/login')
-        self.assertIn(b'<h1>intentional error', result.data)
-
-    # def test_favorite_color_form(self):
-    #     result = self.client.post('/fav-color', data={'color': 'blue'})
-    #     self.assertIn(b'Woah! I like blue, too', result.data)
+        self.assertIn(b'HerbMates Login', result.data)
 
 
-class MyTest(unittest.TestCase):
+class TestFlaskHomepageRoute(TestCase):
+    """Test Flask routes."""
+
+    def setUp(self):
+        """Stuff to do before every test."""
+
+        # Get the Flask test client
+        self.client = app.test_client()
+        app.config['TESTING'] = True
+
+    def test_login(self):
+        """Test login page to see if it contains user info + correct HTML."""
+
+        result = self.client.post("/login",
+                                  data={"email": "cassie1@gmail.com", "password": "hello"},
+                                  follow_redirects=True)
+
+        self.assertIn(b"HerbMates", result.data)
+
+
+class FlaskTestsLoggedIn(TestCase):
+    """Flask tests with user logged in to session."""
+
+    def setUp(self):
+        """Stuff to do before every test."""
+
+        app.config['TESTING'] = True
+        app.config['SECRET_KEY'] = 'key'
+        self.client = app.test_client()
+
+        example_data()
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess['user_id'] = 1
+                sess['is_authenticated'] = True
+
+    def test_important_page(self):
+        """Test important page."""
+
+        result = self.client.get("/")
+        self.assertIn(b'Welcome to Herbmates', result.data)
+
+
+class StatusCodeForLogin(TestCase):
 
     def test_home(self):
         client = app.test_client()
@@ -64,6 +76,7 @@ class MyTest(unittest.TestCase):
         result = client.get('/login')
         self.assertEqual(result.status_code, 200)        
 
+#follow redirect = True in order to check in on routes without being in session
 
 if __name__ == '__main__':
     # If called like a script, run our tests

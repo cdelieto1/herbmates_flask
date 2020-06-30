@@ -13,10 +13,10 @@ from jinja2 import StrictUndefined
 app = Flask(__name__)
 app.secret_key = "dev"
 app.jinja_env.undefined = StrictUndefined
-#ma = Marshmallow(app)
 
 STATIC_URL = '/static/'
 IMG_ROOT ='%s%s' % (STATIC_URL, 'img/')
+#I couldn't get the img token to render for react so had to append this
 
 def check_auth():
     try:
@@ -35,7 +35,7 @@ def homepage():
 
     if not check_auth():
         return redirect('/login')
- 
+
     user = crud.get_user_by_id(session['user_id'])
     if not user:
         return redirect('/logout')
@@ -43,7 +43,7 @@ def homepage():
     inventory = crud.get_herbs_in_inventory(user.complex_id, user.user_id)
 
     inventory_count = inventory.count()
-    #inventory wouldn't pass a count in templating.
+    #inventory variable wouldn't pass a count in templating. BaseQuery error. 
     
     completed_listings = crud.get_completed_listings(user.complex_id)
 
@@ -56,10 +56,6 @@ def homepage_react():
     if not check_auth():
         return redirect('/login')
  
-    #user = crud.get_user_by_id(session['user_id'])
-    #if not user:
-    #    return redirect('/logout')
-
     return render_template('homepage_react.html')
 
 
@@ -80,6 +76,9 @@ def get_inventory():
     for listing in inventory:
         listings.append({
             'inventory_id': listing.inventory_id,
+            'session_user_id': user.user_id,
+            'user_id': listing.user_id,
+            'pickup_user_id': listing.pickup_user_id,
             'status': listing.status,
             'fname': listing.user.fname.title(),
             'herb_name': listing.herb.herb_name,
@@ -87,9 +86,6 @@ def get_inventory():
             'exp_date': listing.exp_date.strftime('%A %d, %B %Y'),
             'img_url': '%s%s' % (IMG_ROOT, listing.herb.img_url),
             'pickup_instructions': listing.pickup_instructions})
-
-    print('>>>>>>>>>>>>>>>>>>')
-    print(listings)
 
 
     #inventory_count = inventory.count()
@@ -110,7 +106,7 @@ def register_user():
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
         complex_id = request.form.get('complex')
-        mobile = request.form.get('mobile')
+        mobile = request.form.get('mobile', type=int)
 
         if password != confirm_password:
             flash('Passwords do not match. Try again')
@@ -118,7 +114,7 @@ def register_user():
         user = crud.get_user_by_email(email)
 
         if user:
-            flash('This email has already been registered. Please sign in instead or reset your password!')
+            flash('This email or mobile number has already been registered. Please sign in instead or reset your password!')
         else:
             user = crud.create_user(email, password, fname, lname, complex_id, mobile)
             session['is_authenticated'] = True
@@ -203,9 +199,9 @@ def update_inventory_status():
         return 'user not authenticated', 403 # forbidden
 
     user_id = session['user_id'] 
-    task = request.form.get('task') # pickup, ready, complete, delete
-    inventory_id = request.form.get('inventory_id') #isdigit()
-    pickup_instructions = request.form.get('pickup_instructions') #look into putting this with the other request libraries
+    task = request.form.get('task', type=str) # pickup, ready, complete, delete
+    inventory_id = request.form.get('inventory_id', type=int)
+    pickup_instructions = request.form.get('pickup_instructions', type=str) 
 
     #lookup singular herb in inventory
     inventory = crud.get_herb_by_inventory_id(inventory_id)
@@ -258,7 +254,6 @@ def update_inventory_status():
 def logout():
     session.clear()
     return redirect('/login')
-
 
 
 if __name__ == '__main__':

@@ -36,7 +36,7 @@ function updateStatus(inTask, inInventoryId, inPickupInstr) {
             msg = "Herb requested successfully! You'll get notified once its ready for pickup.";
           } else if ( inTask == 'ready' ) {
             msg = "You will be notified once the herb has been picked up.";
-          } else if (inTask == 'complete') {
+          } else if ( inTask == 'complete') {
             msg = "All set! Enjoy your herb!"
           } else if ( inTask == 'delete' ) {
             msg = "Herb has been successfully deleted!";
@@ -65,7 +65,6 @@ function updateStatus(inTask, inInventoryId, inPickupInstr) {
 }
 
 function confirmDeletion(inInventoryId) {
-  // TODO: show sweetAlert YES/NO if you really want to delete?
 
   Swal.fire({
     title: 'Are you sure?',
@@ -102,8 +101,7 @@ function pickupReady(inInventoryId) {
   
 
 }
-// Cancellations don't need to be sent to the BE so no ajax gets triggered. 
-// Warning for function naming: "is" implies Boolean.
+// Cancellations don't need to be sent to the BE so no AJAX gets triggered. 
 
 // AJAX needed to POST back to the route
 // $.post(url, [data,] successFunction). 

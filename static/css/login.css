@@ -8,20 +8,22 @@ body {
     color: white;
 }
 
-}
 
-/* site-wrapper and site-wrapper-inner are to vertically center content using
+/*/* site-wrapper and site-wrapper-inner are to vertically center content using
    table/table-cell vertical centering. */
 
 div.container {
     display: table;
-    width: 100%;
+    width: 80%;
     height: 100%;
 }
 
 .flash-msg {
-    color: red;
-    font-family: arial;
+    color: white;
+    font-family: sans-serif;
+    background: #de1f01 !important;
+    padding: 5px;
+    text-align: center;
 }
 
 

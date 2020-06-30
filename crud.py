@@ -12,6 +12,13 @@ auth_token = os.environ['TWILIO_AUTH_TOKEN']
 twilio_number = '+12029461857'
 client = Client(account_sid, auth_token)
 
+def lookup_mobile_number(mobile):
+    try:
+        lookup = client.lookups.phone_numbers(mobile).fetch(type=['carrier'])
+        return lookup.phone_number
+    except Exception as e:
+        return None
+
 
 def create_user(email, password, fname, lname, complex_id, mobile_number):
     """Create and return a new user."""
@@ -21,7 +28,7 @@ def create_user(email, password, fname, lname, complex_id, mobile_number):
                 fname=fname.strip(), 
                 lname=lname.strip(),
                 complex_id=complex_id,
-                mobile_number=mobile_number.strip())
+                mobile_number=mobile_number)
     db.session.add(user)
     db.session.commit()
 
@@ -66,6 +73,12 @@ def get_user_by_email(email):
     """Return a user by email."""
 
     return User.query.filter(User.email == email.lower()).first()
+
+
+def get_user_by_mobile(mobile):
+    """Return a user by mobile number e.164 format"""
+
+    return User.query.filter(User.mobile_number == mobile).first()
 
 
 def get_user_by_id(user_id):

@@ -1,12 +1,18 @@
 /* Style the HerbMates site */
 
-div.list {
-    background: url("/static/img/herb.jpg");
+html, body {
+    height: 100%;
+    margin: 0px;
+}
+
+div.container-list {
+    background: url("/static/img/list.jpg");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
     color: black;
-    margin: 5px;
+    height: 100%;
+    padding-top: 20px;
 }
 
 div.content {
@@ -60,9 +66,9 @@ p.notification {
     padding-top: 10px;
 }
 
-.swal2-popup {
+/**.swal2-popup {
   font-size: 1.6rem !important;
-}
+}**/
 
 .card-content {
     display: flex;
