@@ -111,7 +111,6 @@ class InventoryContainer extends React.Component {
 
   render() {
     console.log('Cassies testing...');
-    //console.log(this.state.inventory);
     const listingCards = [];
 
     if (this.state.inventory != undefined) {

@@ -177,14 +177,13 @@ def add_to_list():
     #TODO: add a qty field into form. For now, we set it to 1 as a forced value.
     herb_qty = request.form.get('herb_qty')
     herb_qty = 1
-
-    pickup_instructions = request.form.get('description')
+    user_descr = request.form.get('description')
 
     listing = crud.add_herbs_to_inventory(herb_id, 
                                          user.user_id,
                                          listing_date,
                                          user.complex_id,
-                                         pickup_instructions,
+                                         user_descr,
                                          herb_qty)
 
     if not listing:

@@ -82,6 +82,24 @@ function confirmDeletion(inInventoryId) {
 
 }
 
+function confirmPickup(inInventoryId) {
+
+  Swal.fire({
+    title: 'Are you sure?',
+    text: "The owner will be notified and you'll receive a SMS once its ready!",
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#28a745',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, request pickup!'
+  }).then((result) => {
+    if (result.value) {
+      updateStatus('pickup', inInventoryId, '');
+    }
+  })
+
+}
+
 function pickupReady(inInventoryId) { 
 
 

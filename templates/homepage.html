@@ -3,84 +3,86 @@
 
 {% block body %}
 
-<div class="content">
-    <h1>Welcome to Herbmates, <span class="name">{{ user.fname.strip()|title }}!</span></h1>
-    <h3>Need an Herb? <a href="/list">Donating</a> an herb?</h3>
-
+<div class="user-details">
+    <span class="welcome-main">Welcome to <b>Herbmates</b>, <span class="name">{{ user.fname.strip()|title }}!</span></span>
+    <br>
+    <span class="welcome-tag">"An app for when you're out of Thyme<sup>TM</sup>"</span>
+</div>
+<div class="background-main">
     {% if not inventory_count > 0  %}
 
-        <p>There are currently no herbs listed at the {{ user.complexes.complex_name|title }}. Why don't you DONATE one?</p>
+        <div class="info"><p>There are currently no herbs listed at the {{ user.complexes.complex_name|title }}. Why don't you DONATE one?</p></div>
 
     {% else %}
 
-        <p>Welcome, currently there are <b>{{ inventory_count }}</b> herb(s) available in the <b>"{{ user.complexes.complex_name|title }}"</b> building: </p>
+        <div class="info"><p>Currently there are <b>{{ inventory_count }}</b> herb(s) available in the <b>"{{ user.complexes.complex_name|title }}"</b> building.</p></div>
 
-<!--         <article class="card animated fadeInLeft">
-        <img class=""/>
-
-        <div class="card-block">
-        <h4 class="card-title">Animal Farm</h4>
-
-        <h6 class="text-muted">George Orwell</h6>
-
-        <p class="card-text">Tired of their servitude to man, a group of farm animals revolt and establish their own society, only to be betrayed into worse servitude by their leaders, the pigs. This satire addresses the communist philosophy the Soviet Union.</p>
-
-        <a href="#" class="btn btn-primary">Read more</a>
-        </div>
-        </article> -->
-
-        <div id="herb-list" class="row">
+    <div class="content">
+        <div id="herb-list" class="row justify-content-center">
             {% for listing in inventory %}
-            <div class="card {% if listing.status in [2,3] %}pending{% endif %}">
-            <div class="bootcards-list col-sm-10">
-            <!-- HERB TILE LOGIC -->
 
-                    <p>Herb: <b>{{ listing.herb.herb_name }}</b></p>
-                    <p>This herb is currently owned by: <b>{{ listing.user.fname|title }}</b> </p>
-                    <p>Quantity: <b>{{ listing.herb_qty }}</b></p>
-                    <img src="/static/img{{ listing.herb.img_url }}">
-                    </a>
-                    <p>Additional info for this bundle: {{ listing.pickup_instructions }}</p>
-                    <p>This herb will expire on: {{ listing.exp_date.strftime('%A %d, %B %Y') }}</p>
+                <div class="card {% if listing.status in [2,3] %}pending{% endif %}">
+                  <div class="card-img-top-overlay">{{ listing.herb.herb_name|upper }}</div>
+                  <img class="card-img-top" src="/static/img{{ listing.herb.img_url }}">
+                  <div class="card-block">
+                    <div class="card-title">Owned by: <b>{{ listing.user.fname|title }}</b>
+                    <p class="card-text m-0"><small class="text-muted">This herb will expire on: {{ listing.exp_date.strftime('%A %d, %B %Y') }}</small></p>
+                    <p class="card-text"><b>Additional info for this bundle:</b> <br>{{ listing.user_herb_descript }}</p>
+                  </div>
+                            <!-- BUTTON LOGIC -->
+                            {% if listing.status == 1 and listing.user_id != user.user_id %}
+                                <p class="notification"></p>
+                                <div class="card-footer">
+                                    <p class="action-btn">
+                                    <a href="#" onclick="confirmPickup('{{ listing.inventory_id }}'); return false;" class="btn btn-block btn-primary">Request this herb</a>
+                                    </p>
+                                </div>
 
-                    <!-- BUTTON LOGIC -->
-                    {% if listing.status == 1 and listing.user_id != user.user_id %}
-                        <p class="action-btn">
-                        <a href="#" onclick="updateStatus('pickup', '{{ listing.inventory_id }}', ''); return false;" class="btn btn-md btn-primary">Request this herb</a>
-                        </p>
+                            {% elif listing.status == 1 and listing.user_id == user.user_id %}
+                                <p class="notification"></p>
+                                <div class="card-footer">
+                                    <p class="action-btn">
+                                    <a href="#" onclick="confirmDeletion('{{ listing.inventory_id }}'); return false;" class="btn btn-block btn-danger">Delete this herb</a>
+                                    </p>
+                                </div>
 
-                    {% elif listing.status == 1 and listing.user_id == user.user_id %}
-                        <p class="action-btn">
-                        <a href="#" onclick="confirmDeletion('{{ listing.inventory_id }}'); return false;" class="btn btn-md btn-danger">Delete this herb</a>
-                        </p>
+                            {% elif listing.status == 2 and listing.pickup_user_id == user.user_id %}
+                                <p class="notification"><span class="badge badge-secondary">Waiting for user to respond</span></p>
+                                <div class="card-footer">
+                                    <p class="action-btn">
+                                    <a href="#" onclick="updateStatus('cancel', '{{ listing.inventory_id }}', ''); return false;" class="btn btn-block btn-danger">Cancel pickup request</a>
+                                    </p>
+                                </div>
 
-                    {% elif listing.status == 2 and listing.pickup_user_id == user.user_id %}
-                        <p class="notification"><span class="badge badge-secondary">Waiting for user to respond</span></p>
-                        <p class="action-btn">
-                        <a href="#" onclick="updateStatus('cancel', '{{ listing.inventory_id }}', ''); return false;" class="btn btn-md btn-danger">Cancel pickup request</a>
-                        </p>
+                            {% elif listing.status == 2 and listing.user_id == user.user_id %}
+                                <p class="notification"></p>
+                                <div class="card-footer">
+                                    <p class="action-btn">
+                                    <a href="#" onclick="pickupReady('{{ listing.inventory_id }}'); return false;" class="btn btn-block btn-success">Prepare Pickup</a>
+                                    </p>
+                                </div>
 
-                    {% elif listing.status == 2 and listing.user_id == user.user_id %}
-                        <p class="action-btn">
-                        <a href="#" onclick="pickupReady('{{ listing.inventory_id }}'); return false;" class="btn btn-md btn-success">Prepare Pickup</a>
-                        </p>
+                            {% elif listing.status == 3 and listing.pickup_user_id == user.user_id %}
+                                <p class="notification"><span class="badge badge-primary">{{ listing.pickup_instructions }}</span></p>
+                                <div class="card-footer">
+                                    <p class="action-btn">
+                                    <a href="#" onclick="updateStatus('complete', '{{ listing.inventory_id }}', ''); return false;" class="btn btn-block btn-info">Complete Pickup</a>
+                                    </p>
+                                </div>
 
-                    {% elif listing.status == 3 and listing.pickup_user_id == user.user_id %}
-                        <p class="notification"><span class="badge badge-primary">{{ listing.pickup_instructions }}</span></p>
+                            {% else %}
+                                <p class="notification"></p>
+                                <div class="card-footer">
+                                <p class="notification"><span class="badge badge-secondary">Waiting for user to respond</span></p>
+                                </div>
+                            {% endif %}
+                                
+                        </div>
+                    </div>
 
-                        <p class="action-btn">
-                        <a href="#" onclick="updateStatus('complete', '{{ listing.inventory_id }}', ''); return false;" class="btn btn-md btn-info">Complete Pickup</a>
-                        </p>
-
-                    {% else %}
-                        <p class="notification"><span class="badge badge-secondary">Waiting for user to respond</span></p>
-                    {% endif %}
-
-                </div>
-            </div>
             {% endfor %}
         </div>
-    
+
 
     <!--
     <p>Completed history of APT COMPLEX</p>
@@ -111,10 +113,10 @@
     -->
 
 
-    </div> <!-- content end -->:
+    </div> <!-- content end -->
     {% endif %}
 
-</div>
+</div> <!-- background end -->
 
   
 {% endblock %}

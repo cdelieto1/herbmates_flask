@@ -35,7 +35,7 @@ def create_user(email, password, fname, lname, complex_id, mobile_number):
     return user
 
 
-def add_herbs_to_inventory(herb_id, user_id, listing_date, complex_id, pickup_instructions, herb_qty=1):
+def add_herbs_to_inventory(herb_id, user_id, listing_date, complex_id, herb_descr, herb_qty=1):
     """Add an herbs for a given complex"""
 
     listing = Inventory(herb_id=herb_id,
@@ -44,7 +44,7 @@ def add_herbs_to_inventory(herb_id, user_id, listing_date, complex_id, pickup_in
                      complex_id=complex_id,
                      herb_qty=herb_qty,
                      exp_date=listing_date + timedelta(days=5),
-                     pickup_instructions=pickup_instructions,
+                     user_herb_descript=herb_descr,
                      status=1,
                      )   
     db.session.add(listing)
