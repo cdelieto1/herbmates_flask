@@ -12,6 +12,13 @@ auth_token = os.environ['TWILIO_AUTH_TOKEN']
 twilio_number = '+12029461857'
 client = Client(account_sid, auth_token)
 
+def lookup_mobile_number(mobile):
+    try:
+        lookup = client.lookups.phone_numbers(mobile).fetch(type=['carrier'])
+        return lookup.phone_number
+    except Exception as e:
+        return None
+
 
 def create_user(email, password, fname, lname, complex_id, mobile_number):
     """Create and return a new user."""
@@ -21,14 +28,14 @@ def create_user(email, password, fname, lname, complex_id, mobile_number):
                 fname=fname.strip(), 
                 lname=lname.strip(),
                 complex_id=complex_id,
-                mobile_number=mobile_number.strip())
+                mobile_number=mobile_number)
     db.session.add(user)
     db.session.commit()
 
     return user
 
 
-def add_herbs_to_inventory(herb_id, user_id, listing_date, complex_id, pickup_instructions, herb_qty=1):
+def add_herbs_to_inventory(herb_id, user_id, listing_date, complex_id, herb_descr, herb_qty=1):
     """Add an herbs for a given complex"""
 
     listing = Inventory(herb_id=herb_id,
@@ -37,7 +44,7 @@ def add_herbs_to_inventory(herb_id, user_id, listing_date, complex_id, pickup_in
                      complex_id=complex_id,
                      herb_qty=herb_qty,
                      exp_date=listing_date + timedelta(days=5),
-                     pickup_instructions=pickup_instructions,
+                     user_herb_descript=herb_descr,
                      status=1,
                      )   
     db.session.add(listing)
@@ -68,6 +75,12 @@ def get_user_by_email(email):
     return User.query.filter(User.email == email.lower()).first()
 
 
+def get_user_by_mobile(mobile):
+    """Return a user by mobile number e.164 format"""
+
+    return User.query.filter(User.mobile_number == mobile).first()
+
+
 def get_user_by_id(user_id):
     """Return a user by id"""
 
@@ -90,9 +103,8 @@ def send_notification(to_number, msg):
                  to=to_number
              )
     except Exception as error:
-        # TODO: maybe send out email if twilio fails?
+        # LATER TODO: maybe send out email if twilio fails?
 
-        print('Something is wrong with your Twilio credentials: %s' % error)
         print(f'Something is wrong with your Twilio credentials: {error}')
         return True
 

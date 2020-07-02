@@ -1,32 +1,35 @@
 {% extends 'base.html' %}
+
 {% block title %}HerbMates{% endblock %}
 
 {% block body %}
-<div class='list'>
-<h1> To add an herb: </h1>
 
-Select an herb you'd like to donate from the dropdown menu:
+<div class="content-list">
+  <div class="row justify-content-center">
+    <div class="add-herb">
+      <h1>ADD YOUR HERB</h1>
 
-  <form action="/list" method="POST">
+      <form action="/list" method="POST">
+        <div class="login-register-form-section">
 
-    <select name="herb">
-      {% for herb in herbs %}
-        <option value="{{ herb.herb_id }}">{{ herb.herb_name|title }}</option>
-      {% endfor %}
-    </select></p>
+              <p>Select an herb you'd like to donate from the menu below:</p>
 
+              <select class="form-control" id="complex" name="herb">
+                {% for herb in herbs %}
+                  <option value="{{ herb.herb_id }}">{{ herb.herb_name|title }}</option>
+                {% endfor %}
+              </select>
+              <br>
+              <div class="form-group">
+                   <p>A brief description about your herb here:</p>
+                   <textarea class="form-control" name="description" id="exampleFormControlTextarea1"                            rows="3"></textarea>
+                   <span class="descr-instr">(i.e organic, place of purchase, homegrown, on its way out etc.)</span>
+                    </div>
+              </div>
 
-  <div>
-      <p>A description about your herb here:</p>
-      <textarea name="description"></textarea>
+          <input type="submit" class="btn btn-block btn-success">
+      </form>
+    </div>
   </div>
-
-    <p>Your herb will expire 5 days from when you enter it into the system </p>
-
-  <p>    
-      <input type="submit">
-  </p>
-
-  </form>
 </div>
 {% endblock %}

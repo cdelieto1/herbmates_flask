@@ -1,34 +1,86 @@
 /* Style the HerbMates site */
 
-div.list {
-    background: url("/static/img/herb.jpg");
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    color: black;
+html, body {
+    height: 100%;
+    margin: 0px;
 }
 
+h3.display-4 {
+    background-color: white;
+}
+
+p.lead {
+    background-color: white;
+    margin-top: -10px;
+}
+
+
 div.content {
-    margin: 15px !important;
+    margin: 10px !important;
+}
+
+div.background-main {
+    background: url("/static/img/double-bubble-outline.png");
 }
 
 span.name {
     color: green;
 }
 
-div.navbar-header img {
-    width: 40px;
-    float: left;
-    margin-top: 7px;
-    margin-right: 7px;
+span.round-tag {
+    width: 60px;
+    height: 60px;
+    border-radius: 50% 50% 50% 0;
+    border: 4px solid #FFF;
+    background: #37A12B;
+    position: absolute;
+    bottom: 0px;
+    padding: 15px 6px;
+    font-size: 17px;
+    color: #FFF;
+    font-weight: bold;
 }
 
-div.well img {
-    width: 90px;
+h1 {
+    margin: 25px;
+    color: green;
+    padding-bottom: -10px;
 }
+h2 {
+    color: #006400;
+    margin: 15px;
+    font-style: Verdana; 
+    text-align: left:;
+
+}
+
+div.navbar {
+    padding: 50px;
+
+}
+div.navbar-collapse {
+    font-size: 18px;
+}
+
+div.card {
+    margin: 10px;
+    border-radius: 20px;
+    overflow: hidden;
+    max-width: 300px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+div.bootcards-list img {
+    width: 90px !important;
+    border-radius: 100px;
+    overflow: hidden;
+    border: 1px #9c9999 solid;
+}
+
 
 div.pending {
-    border: solid 3px #de1f01 !important;
+    border: solid 2px #de1f01 !important;
+    overflow: hidden;
 }
 
 p.action-btn {
@@ -39,9 +91,159 @@ p.action-btn {
 p.notification {
     text-align: center;
     padding-top: 10px;
+    height: 34px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.swal2-popup {
+/**.swal2-popup {
   font-size: 1.6rem !important;
+}**/
+
+.card-content {
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
 }
 
+.login-register-form-section {
+    max-width: 350px;
+    margin: 90 auto;
+}
+
+/*.login-register-form-section i {
+    width: 10px;
+}*/
+
+/*.login-register-form-section .nav-tabs > li > a {
+    color: #2abb9b;
+}*/
+ 
+/*.login-register-form-section .nav-tabs > li.active > a {
+    background-color: #2abb9b;
+    border-color: #2abb9b;
+    color: white;
+}*/
+
+.login-register-form-section .btn-custom {
+    width: 30%;
+    background-color: #2abb9b;
+}
+
+.logout {
+    color: red !important;
+}
+
+.user-details {
+    background: lightgrey;
+    padding: 10px;
+    text-align: center;
+}
+
+.welcome-main {
+    font-size: 34px;
+    font-weight: lighter;
+}
+
+.welcome-tag {
+    font-size: 18px;
+}
+
+.card-footer {
+  padding: 0px;
+}
+
+.card-img-top {
+    width: 100%;
+    overflow: hidden;
+    max-height: 200px;
+    height: 200px;
+    top: 0px;
+    position: absolute;
+}
+
+.card-block {
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+}
+
+.info {
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+    height: 30px;
+}
+
+.card-img-top-overlay {
+    height: 200px;
+    max-height: 200px;
+    text-align: center;
+    line-height: 200px;
+    position: relative;
+    top: 0px;
+    z-index: 2;
+    background: black;
+    opacity: 40%;
+    font-size: 30px;
+    color: white;
+    font-weight: lighter;
+}
+
+.card-title {
+    min-height: 150px;
+    max-height: 150px;
+    height: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.brand {
+    position: absolute;
+    left: 50%;
+    margin-left: -50px !important;  /* 50% of your logo width */
+    display: block;
+}
+
+sup {
+  vertical-align: super;
+  font-size: xx-small;
+}
+
+.add-herb {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 20px;
+    overflow: hidden;
+    text-align: center;
+    padding: 15px;
+    font-weight: lighter;
+    background: white;
+    top: 100px;
+    position: fixed;
+}
+
+.content-list {
+    background: url("/static/img/freshherbs.jpg");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    /*color: black;*/
+    height: 100%;
+}
+
+.descr-instr {
+    font-size: 12px;
+    font-style: italic;
+}
+
+/*.login-register-form-section .btn-custom:hover {
+    width: 100%;
+    background-color: #48A497;
+    border-color: #2abb9b;
+}*/
+
+/*.login-register-form-section .form-group {
+    padding: 0 20px;
+}*/

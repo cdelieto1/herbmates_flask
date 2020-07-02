@@ -1,0 +1,22 @@
+{% extends 'base_react.html' %}
+{% block title %}HerbMates{% endblock %}
+
+{% block body %}
+
+<div class="content">
+
+<!-- React begins here, populate inventory below the header -->
+
+{% block js %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.js"></script>
+  <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>  
+  <script src="/static/js/homepage.jsx" type="text/jsx"></script>
+{% endblock %}
+
+<!-- Mount react components on to this element. -->
+<div id="herb-list" class="row"></div>
+
+  
+{% endblock %}
+

@@ -8,20 +8,22 @@ body {
     color: white;
 }
 
-}
 
-/* site-wrapper and site-wrapper-inner are to vertically center content using
+/*/* site-wrapper and site-wrapper-inner are to vertically center content using
    table/table-cell vertical centering. */
 
 div.container {
     display: table;
-    width: 100%;
+    width: 80%;
     height: 100%;
 }
 
 .flash-msg {
-    color: red;
-    font-family: arial;
+    color: white;
+    font-family: sans-serif;
+    background: #de1f01 !important;
+    padding: 5px;
+    text-align: center;
 }
 
 
@@ -46,7 +48,7 @@ div.container {
 
 .login-register-form-section .nav-tabs > li > a, 
 .login-register-form-section .nav-tabs > li.active > a {
-    width: 160px;
+    width: 173px;
     text-align: center; 
     border-radius: 0;
 }
@@ -73,4 +75,23 @@ div.container {
 
 .login-register-form-section .form-group {
     padding: 0 20px;
+}
+
+.content-login {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 20px;
+    overflow: hidden;
+    text-align: center;
+    padding: 15px;
+    background: white;
+    left: 100px;
+    top: 100px;
+    position: fixed;
+    color: #ffa500;
+}
+
+.header-login {
+    margin: 10px;
+    position: relative;
+    font-size: 30px;
 }
