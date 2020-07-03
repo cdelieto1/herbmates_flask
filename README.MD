@@ -1,6 +1,6 @@
 # Herbmates
 
-![image info](./static/img/freshherbs.jpg)
+![image info](./static/img/thyme.jpg)
 
 
 HerbMates is an inventory app of all the *currently* available fresh herbs available in your apt building, as well as place to donate herbs that you won't be able to use in time. An automatic expiration date of 5 days is added to all herbs donated and will drop and only active herbs are listed. 
