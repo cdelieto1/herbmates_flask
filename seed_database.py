@@ -43,8 +43,11 @@ def example_data(is_testing=True):
     db.session.commit()
 
     # create dummy user 
-    user1 = User(email='cassie1@gmail.com', password='hello', fname='cassie', lname='dorito', mobile_number=5555555555, complex_id=1)
+    user1 = User(email='cassie1@gmail.com', password='hello', fname='Cassie', lname='Delieto', mobile_number='+19513759375', complex_id=1)
     db.session.add(user1)
+    db.session.commit()
+    user2 = User(email='cassie2@gmail.com', password='hello', fname='Jennifer', lname='Dorito', mobile_number='+14154843593', complex_id=1)
+    db.session.add(user2)
     db.session.commit()
      
     status0 = Status(status_id=0, status='inactive')

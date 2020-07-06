@@ -195,7 +195,10 @@ p.notification {
     min-height: 150px;
     max-height: 150px;
     height: 150px;
-    white-space: nowrap;
+}
+
+.card-text {
+    /*white-space: nowrap;*/
     overflow: hidden;
     text-overflow: ellipsis;
 }
