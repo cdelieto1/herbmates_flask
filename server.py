@@ -111,16 +111,26 @@ def register_user():
         if password != confirm_password:
             flash('Passwords do not match. Try again')
 
-        user = crud.get_user_by_email(email)
+        mobile_verified = crud.lookup_mobile_number(mobile)
 
-        if user:
-            flash('This email or mobile number has already been registered. Please sign in instead or reset your password!')
+        user = crud.get_user_by_email(email)
+        mobile_user = crud.get_user_by_mobile(mobile_verified)
+
+        if not mobile_verified:
+            flash('Your mobile number could not be verified. Please try again!')
+        elif user:
+            flash('This email has already been registered. Please sign in instead or reset your password!')
+        elif mobile_user:
+            flash('This mobile number has already been registered. Please sign in instead or reset your password!')
         else:
-            user = crud.create_user(email, password, fname, lname, complex_id, mobile)
-            session['is_authenticated'] = True
-            session['user_id'] = user.user_id
-            flash('Account created!')
-            return redirect('/')
+            user = crud.create_user(email, password, fname, lname, complex_id, mobile_verified)
+            if user:
+                session['is_authenticated'] = True
+                session['user_id'] = user.user_id
+                flash('Account created!')
+                return redirect('/')
+            else:
+                flash('Signup could not be completed. Please try again!')
 
     complexes = Complex.query.all()
 
