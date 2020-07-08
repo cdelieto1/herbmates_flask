@@ -1,6 +1,6 @@
 # Herbmates
 
-![image info](./static/img/logo.png=150x150)
+![image info](./static/img/logo.png)
 
 ## Checkout your building's current inventory
 
