@@ -1,7 +1,6 @@
 # Herbmates
 
-![image info](./static/img/logo.png)
-
+![image info](./static/img/logo.png=150x150)
 
 ## Checkout your building's current inventory
 
@@ -9,8 +8,7 @@
 
 ## Donate an herb yourself
 
-![image info](./static/img/logo.png)
-
+![image info](./static/img/listing.png)
 
 HerbMates is an inventory app of all the *currently* available fresh herbs available in your apt building, as well as place to donate herbs that you won't be able to use in time. An automatic expiration date of 5 days is added to all herbs donated and will drop and only active herbs are listed. 
   - Herbs are filtered by status and apt complex. You can only see fresh herbs listed less than 5 days ago and available only in your building! 
