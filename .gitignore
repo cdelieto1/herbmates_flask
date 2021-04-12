@@ -1,3 +1,6 @@
 env
 *.pyc
 secrets.sh
+get-pip.py
+ddagent-install.log
+ddog/
