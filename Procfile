@@ -1,1 +1,1 @@
-web: gunicorn server.connect_to_db
+web:gunicorn server.connect_to_db
