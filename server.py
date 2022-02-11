@@ -8,7 +8,15 @@ from flask_sqlalchemy import SQLAlchemy
 # from flask_marshmallow import Marshmallow
 import crud
 from jinja2 import StrictUndefined
-from ddtrace import tracer
+# from ddtrace import tracer
+# import logging, json_log_formatter, threading
+
+# formatter = json_log_formatter.JSONFormatter()
+# json_handler = logging.FileHandler(filename='/var/log/datadog/my-log.json')
+# json_handler.setFormatter(formatter)
+# logger = logging.getLogger('my_json')
+# logger.addHandler(json_handler)
+# logger.setLevel(logging.INFO)
 
 app = Flask(__name__)
 app.secret_key = "dev"
@@ -29,10 +37,21 @@ def check_auth():
         return False
 
 
-@tracer.wrap(name='visit_home')
+#@tracer.wrap(name='visit_home')
 @app.route('/')
 def homepage():
     """View homepage ONLY IF authenticated."""
+
+    #my_thread= threading.currentThread().getName()
+
+    # logger.info('function1 has executed',
+    # extra={
+    #     'job_category': 'test_function',
+    #     'logger.name': 'my_json',
+    #     'logger.thread_name' : my_thread
+    #     }
+    # )
+    # return True
 
     if not check_auth():
         return redirect('/login')
@@ -60,7 +79,7 @@ def homepage_react():
     return render_template('homepage_react.html')
 
 
-@tracer.wrap(name='get_inventory')
+#@tracer.wrap(name='get_inventory')
 @app.route('/get-inventory', methods=['GET'])
 def get_inventory():
     """View REACT homepage ONLY IF authenticated."""
@@ -96,7 +115,7 @@ def get_inventory():
     return jsonify({'success': True,
                     'data': listings})
 
-@tracer.wrap(name='signup')
+#@tracer.wrap(name='signup')
 @app.route('/signup', methods=['GET', 'POST'])
 def register_user():
     """Create a new user."""
