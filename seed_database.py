@@ -15,7 +15,7 @@ def example_data(is_testing=True):
         os.system('dropdb d9duoauc48c6p0')
         os.system('createdb d9duoauc48c6p0')
         #model.connect_to_db(server.app)
-        model.connect_to_db(app, "postgres://ylxmirowuxsags:92b4860eeaf7ba4a25a907d36ce5531cf5c3e3d81e3a896a34d2e08d1c1e368c@ec2-54-162-211-113.compute-1.amazonaws.com:5432/d9duoauc48c6p0")
+        model.connect_to_db(app, db_url)
 
     model.db.create_all()
 

@@ -19,7 +19,7 @@ from jinja2 import StrictUndefined
 # logger.setLevel(logging.INFO)
 
 app = Flask(__name__)
-app.secret_key = "dev"
+app.secret_key = os.environ['SECRET_KEY'] #"dev"
 app.jinja_env.undefined = StrictUndefined
 
 STATIC_URL = '/static/'
@@ -290,4 +290,5 @@ def logout():
 connect_to_db(app)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    #app.run(host='0.0.0.0', debug=True)
+    app.run()

@@ -10,6 +10,7 @@ from twilio.rest import Client
 account_sid = os.environ['TWILIO_ACCOUNT_SID']
 auth_token = os.environ['TWILIO_AUTH_TOKEN']
 twilio_number = '+12029461857'
+db_url = os.environ['DATABASE_URL']
 client = Client(account_sid, auth_token)
 
 def lookup_mobile_number(mobile):
