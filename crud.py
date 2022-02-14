@@ -7,10 +7,10 @@ import os
 # Twilio config
 from twilio.rest import Client
 
-account_sid = os.environ['TWILIO_ACCOUNT_SID']
-auth_token = os.environ['TWILIO_AUTH_TOKEN']
+account_sid = os.getenv('TWILIO_ACCOUNT_SID')
+auth_token = os.getenv('TWILIO_AUTH_TOKEN')
 twilio_number = '+12029461857'
-db_url = os.environ['DATABASE_URL']
+db_url = os.getenv('DATABASE_URL', 'postgresql:///herbmates')
 client = Client(account_sid, auth_token)
 
 def lookup_mobile_number(mobile):

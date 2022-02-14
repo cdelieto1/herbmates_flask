@@ -20,8 +20,8 @@ import os
 # logger.setLevel(logging.INFO)
 
 app = Flask(__name__)
-app.secret_key = os.environ['SECRET_KEY'] #"dev"
-db_url = os.environ['DATABASE_URL']
+app.secret_key = os.getenv('SECRET_KEY', "dev")
+db_url = os.getenv('DATABASE_URL', 'postgresql:///herbmates')
 app.jinja_env.undefined = StrictUndefined
 
 STATIC_URL = '/static/'
