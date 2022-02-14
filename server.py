@@ -21,6 +21,7 @@ import os
 
 app = Flask(__name__)
 app.secret_key = os.environ['SECRET_KEY'] #"dev"
+db_url = os.environ['DATABASE_URL']
 app.jinja_env.undefined = StrictUndefined
 
 STATIC_URL = '/static/'
@@ -288,7 +289,7 @@ def logout():
     return redirect('/login')
 
 
-connect_to_db(app)
+connect_to_db(app, db_url)
 
 if __name__ == '__main__':
     #app.run(host='0.0.0.0', debug=True)
