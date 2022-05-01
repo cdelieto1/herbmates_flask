@@ -1,4 +1,4 @@
-"""Models for movie ratings app."""
+"""Models for herb donating/requesting app."""
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import backref

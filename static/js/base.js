@@ -119,9 +119,3 @@ function pickupReady(inInventoryId) {
   
 
 }
-// Cancellations don't need to be sent to the BE so no AJAX gets triggered. 
-
-// AJAX needed to POST back to the route
-// $.post(url, [data,] successFunction). 
-// Use this if you want to make a POST call and don’t want to
-// load the response to some container DOM.
